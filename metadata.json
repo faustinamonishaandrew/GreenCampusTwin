@@ -1,0 +1,6 @@
+{
+  "name": "Green Campus Digital Twin",
+  "description": "AI Sustainability Command Center for educational campuses to monitor electricity, water, waste, air quality, carbon emissions, predict usage, detect anomalies, and simulate what-if sustainability scenarios.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
