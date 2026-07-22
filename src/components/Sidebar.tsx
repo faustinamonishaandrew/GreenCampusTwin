@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   LayoutDashboard,
+  Box,
   MapPin,
   Building2,
   TrendingUp,
@@ -33,7 +34,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const mainNav = [
     { id: 'dashboard', label: 'Executive Dashboard', icon: LayoutDashboard },
-    { id: 'ai_insights', label: 'AI Insights', icon: Sparkles, highlight: true },
+    { id: 'digital_twin', label: '🏛️ Digital Twin', icon: Box, highlight: true },
+    { id: 'ai_insights', label: 'AI Insights', icon: Sparkles },
     { id: 'campus_map', label: 'Campus Map', icon: MapPin },
     { id: 'buildings', label: 'Buildings', icon: Building2 },
     { id: 'predictions', label: 'AI Predictions', icon: TrendingUp },

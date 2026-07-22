@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { DashboardView } from './components/DashboardView';
+import { DigitalTwinView } from './components/DigitalTwinView';
 import { CampusMapView } from './components/CampusMapView';
 import { BuildingDetailsView } from './components/BuildingDetailsView';
 import { AIPredictionsView } from './components/AIPredictionsView';
@@ -345,6 +346,15 @@ export default function App() {
                 onNavigateToTab={(tab) => setActiveTab(tab)}
                 onSelectBuilding={handleSelectBuilding}
                 onExportPDF={handleExportPDF}
+              />
+            )}
+
+            {activeTab === 'digital_twin' && (
+              <DigitalTwinView
+                buildings={buildings}
+                recommendations={recommendations}
+                onSelectBuilding={handleSelectBuilding}
+                onApplyRecommendation={handleApplyRecommendation}
               />
             )}
 

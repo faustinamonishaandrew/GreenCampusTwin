@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LicetSkeletalBuilding } from './LicetSkeletalBuilding';
 import {
   Zap,
   Droplet,
@@ -344,128 +345,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             CENTERPIECE: AERIAL CAMPUS INTERACTIVE TWIN (Col 4-9)
         ========================================== */}
         <div className="lg:col-span-6 space-y-4">
-          <div className="relative rounded-2xl bg-slate-950 border border-cyan-500/40 overflow-hidden shadow-2xl group min-h-[480px]">
-            {/* High-Res Aerial Campus Imagery */}
-            <img
-              src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1600&auto=format&fit=crop&q=80"
-              alt="LICET Campus Digital Twin Aerial View"
-              className="w-full h-[520px] object-cover opacity-85 transition-all duration-700 group-hover:scale-105 filter brightness-90 contrast-110"
-            />
-
-            {/* Dark Digital Overlay & Scan Grid */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent pointer-events-none" />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#06b6d410_1px,transparent_1px),linear-gradient(to_bottom,#06b6d410_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
-
-            {/* Top Overlay Badge */}
-            <div className="absolute top-3 left-3 z-10 flex items-center gap-2 rounded-xl bg-slate-900/90 border border-cyan-500/30 px-3 py-1.5 backdrop-blur-md shadow-lg">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-xs font-black text-white">LIVE CAMPUS TWIN</span>
-              <span className="text-[10px] text-cyan-400 font-mono">1,420 Nodes</span>
-            </div>
-
-            {/* FLOATING OVERLAY CARDS ON CAMPUS BUILDINGS */}
-
-            {/* 1. ENERGY MONITORING OVERLAY CARD */}
-            <div
-              onClick={() => onNavigateToTab('energy')}
-              className="absolute top-[22%] left-[45%] -translate-x-1/2 z-20 cursor-pointer group/card transition-all hover:scale-105"
-            >
-              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-cyan-500/50 p-2.5 backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.3)] text-white text-xs">
-                <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
-                  <Zap className="h-4 w-4 animate-pulse" />
-                </div>
-                <div>
-                  <div className="font-extrabold flex items-center gap-1 text-[11px] text-cyan-300">
-                    ENERGY MONITORING
-                  </div>
-                  <div className="text-xs font-black text-white">Consumption: 180 kW</div>
-                  <div className="text-[10px] text-emerald-400 font-semibold">Status: Normal</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 2. WATER MANAGEMENT OVERLAY CARD */}
-            <div
-              onClick={() => onNavigateToTab('water')}
-              className="absolute top-[68%] left-[20%] z-20 cursor-pointer group/card transition-all hover:scale-105"
-            >
-              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-blue-500/50 p-2.5 backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.3)] text-white text-xs">
-                <div className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400">
-                  <Droplet className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="font-extrabold text-[11px] text-blue-300">WATER MANAGEMENT</div>
-                  <div className="text-xs font-black text-white">Usage Today: 4,200 L</div>
-                  <div className="text-[10px] text-emerald-400 font-semibold">Status: Normal</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 3. AIR QUALITY OVERLAY CARD */}
-            <div
-              onClick={() => onNavigateToTab('air_quality')}
-              className="absolute top-[62%] right-[18%] z-20 cursor-pointer group/card transition-all hover:scale-105"
-            >
-              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-emerald-500/50 p-2.5 backdrop-blur-md shadow-[0_0_15px_rgba(16,185,129,0.3)] text-white text-xs">
-                <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
-                  <Wind className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="font-extrabold text-[11px] text-emerald-300">AIR QUALITY</div>
-                  <div className="text-xs font-black text-white">AQI: 42 (Good)</div>
-                  <div className="text-[10px] text-emerald-400 font-semibold">Status: Good</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 4. SOLAR PV SYSTEM OVERLAY CARD */}
-            <div
-              onClick={() => onNavigateToTab('solar')}
-              className="absolute top-[12%] left-[18%] z-20 cursor-pointer group/card transition-all hover:scale-105"
-            >
-              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-amber-500/50 p-2.5 backdrop-blur-md shadow-[0_0_15px_rgba(245,158,11,0.3)] text-white text-xs">
-                <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
-                  <Sun className="h-4 w-4 animate-spin-slow" />
-                </div>
-                <div>
-                  <div className="font-extrabold text-[11px] text-amber-300">SOLAR PV SYSTEM</div>
-                  <div className="text-xs font-black text-white">Capacity: 350 kWp</div>
-                  <div className="text-[10px] text-amber-400 font-semibold">Status: Generating (142 kW)</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 5. WEATHER STATION OVERLAY CARD */}
-            <div className="absolute top-[12%] right-[12%] z-20 cursor-pointer group/card transition-all hover:scale-105">
-              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-cyan-500/50 p-2.5 backdrop-blur-md text-white text-xs">
-                <div className="p-1.5 rounded-lg bg-cyan-500/20 text-cyan-400">
-                  <Compass className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="font-extrabold text-[11px] text-cyan-300">WEATHER STATION</div>
-                  <div className="text-xs font-black text-white">32°C • Humidity: 62%</div>
-                  <div className="text-[10px] text-slate-300">Wind: 12 km/h</div>
-                </div>
-              </div>
-            </div>
-
-            {/* 6. PARKING SYSTEM OVERLAY CARD */}
-            <div className="absolute bottom-[10%] left-[42%] -translate-x-1/2 z-20 cursor-pointer group/card transition-all hover:scale-105">
-              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-purple-500/50 p-2.5 backdrop-blur-md text-white text-xs">
-                <div className="p-1.5 rounded-lg bg-purple-500/20 text-purple-400">
-                  <Car className="h-4 w-4" />
-                </div>
-                <div>
-                  <div className="font-extrabold text-[11px] text-purple-300">PARKING SYSTEM</div>
-                  <div className="text-xs font-black text-white">Occupied: 78 / 120</div>
-                  <div className="text-[10px] text-emerald-400 font-semibold">Availability: 35%</div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <LicetSkeletalBuilding onNavigateToTab={onNavigateToTab} />
         </div>
 
         {/* ==========================================
