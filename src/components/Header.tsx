@@ -64,34 +64,33 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 sm:px-6 transition-colors">
       {/* Left: Brand Identity & Live Sensor Health Badge */}
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 text-white shadow-md shadow-emerald-500/20">
-            <Activity className="h-5 w-5 animate-pulse" />
+      <div className="flex items-center gap-3">
+        {/* LICET Crest Badge */}
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 via-teal-600 to-cyan-700 text-white shadow-md shadow-emerald-500/30 ring-2 ring-emerald-500/20 font-black text-xs tracking-tighter">
+          LICET
+        </div>
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold tracking-tight text-slate-900 dark:text-white text-sm sm:text-base lg:text-lg">
+              LOYOLA-ICAM COLLEGE OF ENGINEERING & TECHNOLOGY
+            </span>
+            <span className="rounded-md bg-cyan-500/10 px-2 py-0.5 text-[10px] font-black text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 tracking-wider">
+              DIGITAL TWIN
+            </span>
           </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className="font-bold tracking-tight text-slate-900 dark:text-white text-base sm:text-lg">
-                GREEN CAMPUS
-              </span>
-              <span className="rounded-md bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                TWIN AI
-              </span>
-            </div>
-            <p className="hidden md:block text-xs text-slate-500 dark:text-slate-400">
-              AI Sustainability Command Center
-            </p>
-          </div>
+          <p className="hidden md:block text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+            AI-Powered Green Campus Sustainability Command Center
+          </p>
         </div>
 
         {/* Live System Ticker */}
-        <div className="hidden lg:flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800/80 px-3 py-1 text-xs border border-slate-200/80 dark:border-slate-700/60">
+        <div className="hidden xl:flex items-center gap-2 rounded-full bg-slate-100 dark:bg-slate-800/80 px-3 py-1 text-xs border border-slate-200/80 dark:border-slate-700/60">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
           <span className="text-slate-600 dark:text-slate-300 font-medium">
-            1,420 IoT Sensors Online
+            1,420 IoT Sensors
           </span>
           <span className="text-slate-400">•</span>
           <span className="text-slate-500 dark:text-slate-400 font-mono">14ms latency</span>
@@ -99,7 +98,7 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Guest Mode Indicator Badge */}
         {isGuestMode && (
-          <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 px-3 py-1 text-xs font-extrabold shadow-2xs animate-pulse">
+          <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 px-3 py-1 text-xs font-extrabold shadow-2xs animate-pulse">
             <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0" />
             <span>Guest Mode – Demo Data</span>
           </div>
@@ -176,6 +175,21 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right: Controls & User Profile */}
       <div className="flex items-center gap-2 sm:gap-3">
+        {/* Weather & Time Status Header Widget */}
+        <div className="hidden lg:flex items-center gap-2.5 bg-slate-100 dark:bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
+          <div className="flex items-center gap-1.5 font-mono text-slate-700 dark:text-slate-200 font-bold">
+            <span className="text-emerald-500 font-extrabold">10:30 AM</span>
+            <span className="text-slate-400">|</span>
+            <span className="text-slate-500 dark:text-slate-400">23 May 2026</span>
+          </div>
+          <div className="h-3.5 w-px bg-slate-300 dark:bg-slate-700" />
+          <div className="flex items-center gap-1.5 font-semibold text-slate-800 dark:text-slate-200">
+            <span className="text-amber-500">☀️</span>
+            <span>32°C</span>
+            <span className="text-slate-400 text-[10px] hidden xl:inline">Chennai, IN</span>
+          </div>
+        </div>
+
         {/* Dark/Light Mode Switcher */}
         <button
           onClick={() => setDarkMode(!darkMode)}

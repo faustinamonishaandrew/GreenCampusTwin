@@ -4,7 +4,7 @@ import {
   Droplet,
   Trash2,
   Wind,
-  CloudSun,
+  Sun,
   Award,
   AlertTriangle,
   ArrowUpRight,
@@ -16,11 +16,23 @@ import {
   Building2,
   Sparkles,
   Clock,
-  Brain,
   Activity,
   Calendar,
   ChevronRight,
-  ShieldAlert,
+  MapPin,
+  Car,
+  Trees,
+  Users,
+  ShieldCheck,
+  Check,
+  Info,
+  Layers,
+  PieChart as PieIcon,
+  Bot,
+  Compass,
+  FileText,
+  Settings,
+  Leaf,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -31,8 +43,9 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  CartesianGrid,
-  Legend,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
 import {
   Building,
@@ -63,466 +76,659 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onSelectBuilding,
   onExportPDF,
 }) => {
-  const [trendView, setTrendView] = useState<'weekly' | 'monthly'>('weekly');
+  const [selectedBuildingId, setSelectedBuildingId] = useState<string>('bldg-1');
+  const selectedBuilding = buildings.find((b) => b.id === selectedBuildingId) || buildings[0];
 
-  const totalEnergy = buildings.reduce((acc, b) => acc + b.currentEnergyKwh, 0);
-  const totalWater = buildings.reduce((acc, b) => acc + b.currentWaterLiters, 0);
-  const totalWaste = buildings.reduce((acc, b) => acc + b.currentWasteKg, 0);
-  const avgAqi = Math.round(buildings.reduce((acc, b) => acc + b.currentAqi, 0) / buildings.length);
-  const totalCarbon = buildings.reduce((acc, b) => acc + b.currentCarbonKg, 0);
-  const healthScore = Math.round((scores.energy + scores.water + scores.waste + scores.airQuality + scores.carbon) / 5);
-
-  const openAnomalies = anomalies.filter((a) => a.status === 'open' || a.status === 'investigating');
-
-  // Weekly Trend Data
-  const weeklyTrendData = [
-    { day: 'Mon', energy: 4100, water: 26000, carbon: 1350 },
-    { day: 'Tue', energy: 4300, water: 27500, carbon: 1410 },
-    { day: 'Wed', energy: 4500, water: 29000, carbon: 1480 },
-    { day: 'Thu', energy: 4200, water: 26800, carbon: 1390 },
-    { day: 'Fri', energy: 4600, water: 28400, carbon: 1510 },
-    { day: 'Sat', energy: 2800, water: 18000, carbon: 890 },
-    { day: 'Sun', energy: 2300, water: 15200, carbon: 720 },
+  // Energy Breakdown Donut Chart Data
+  const energyBreakdownData = [
+    { name: 'HVAC', value: 40, color: '#3B82F6' },
+    { name: 'Lighting', value: 25, color: '#10B981' },
+    { name: 'Labs', value: 20, color: '#F59E0B' },
+    { name: 'IT & Servers', value: 10, color: '#8B5CF6' },
+    { name: 'Others', value: 5, color: '#06B6D4' },
   ];
 
-  // Monthly Trend Data
-  const monthlyTrendData = [
-    { month: 'Jan', energy: 125000, water: 820000, carbon: 41000 },
-    { month: 'Feb', energy: 118000, water: 790000, carbon: 38500 },
-    { month: 'Mar', energy: 132000, water: 850000, carbon: 43000 },
-    { month: 'Apr', energy: 128000, water: 810000, carbon: 41800 },
-    { month: 'May', energy: 141000, water: 890000, carbon: 46200 },
-    { month: 'Jun', energy: 135000, water: 840000, carbon: 44000 },
-    { month: 'Jul', energy: 129000, water: 815000, carbon: 42100 },
+  // Carbon Weekly Bar Chart Data
+  const carbonWeeklyData = [
+    { day: 'Mon', co2: 2.5 },
+    { day: 'Tue', co2: 2.8 },
+    { day: 'Wed', co2: 2.4 },
+    { day: 'Thu', co2: 2.6 },
+    { day: 'Fri', co2: 2.3 },
+    { day: 'Sat', co2: 1.6 },
+    { day: 'Sun', co2: 1.4 },
+  ];
+
+  // 30-Day Trend Sparkline Data for Sustainability Score
+  const trend30DaysData = [
+    { day: '1', score: 81 },
+    { day: '5', score: 83 },
+    { day: '10', score: 82 },
+    { day: '15', score: 85 },
+    { day: '20', score: 86 },
+    { day: '25', score: 88 },
+    { day: '30', score: 89 },
+  ];
+
+  // Greenie AI Insights Cards Data
+  const aiInsights = [
+    {
+      id: 'insight-1',
+      icon: Sun,
+      color: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+      title: 'Solar Generation Forecast',
+      message: 'Solar generation may drop by 15% tomorrow due to predicted cloudy weather.',
+      confidence: 94,
+    },
+    {
+      id: 'insight-2',
+      icon: Droplet,
+      color: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
+      title: 'Water Consumption Trend',
+      message: 'Water usage is 8% higher than usual pattern across Main Block Wing B.',
+      confidence: 91,
+    },
+    {
+      id: 'insight-3',
+      icon: Zap,
+      color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+      title: 'EV Charging Load Peak',
+      message: 'EV charging demand will peak between 4 PM - 7 PM today.',
+      confidence: 96,
+    },
+    {
+      id: 'insight-4',
+      icon: Leaf,
+      color: 'text-teal-400 bg-teal-500/10 border-teal-500/20',
+      title: 'Carbon Footprint Reduction',
+      message: 'Carbon emissions reduced by 8% this week thanks to rooftop solar PV.',
+      confidence: 98,
+    },
+    {
+      id: 'insight-5',
+      icon: CheckCircle2,
+      color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20',
+      title: 'System Health Status',
+      message: 'No critical alerts detected across 1,420 campus IoT telemetry nodes.',
+      confidence: 99,
+    },
+  ];
+
+  // Bottom Navigation Links
+  const navMenuItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: Activity },
+    { id: 'campus_map', label: 'Campus Map', icon: MapPin },
+    { id: 'buildings', label: 'Buildings', icon: Building2 },
+    { id: 'energy', label: 'Energy', icon: Zap },
+    { id: 'water', label: 'Water', icon: Droplet },
+    { id: 'air_quality', label: 'Air Quality', icon: Wind },
+    { id: 'solar', label: 'Solar', icon: Sun },
+    { id: 'waste', label: 'Waste', icon: Trash2 },
+    { id: 'carbon', label: 'Carbon', icon: Leaf },
+    { id: 'copilot', label: 'Greenie AI', icon: Bot, highlight: true },
+    { id: 'reports', label: 'Reports', icon: FileText },
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (
-    <div className="space-y-6 pb-12 animate-in fade-in duration-300">
-      {/* Top Banner Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 rounded-3xl bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 p-6 text-white shadow-xl border border-emerald-500/20">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-bold text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
-              <Activity className="h-3.5 w-3.5 animate-pulse" />
-              Campus Live Digital Twin
-            </span>
-            <span className="text-xs text-slate-400">• Updated 1 min ago</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            AI Sustainability Command Center
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-300 max-w-2xl">
-            Real-time IoT telemetry across 8 campus blocks. XGBoost & Gemini 2.5 confidence at{' '}
-            <span className="text-emerald-400 font-bold">{prediction.predictionConfidencePct}%</span>.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <button
-            onClick={() => onNavigateToTab('ai_insights')}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 px-4 py-2.5 text-xs font-bold text-white shadow-lg shadow-emerald-500/30 transition-all hover:scale-105"
-          >
-            <Sparkles className="h-4 w-4" />
-            AI Insights & Diagnosis
-          </button>
-          <button
-            onClick={onExportPDF}
-            className="flex items-center gap-2 rounded-xl bg-slate-800 hover:bg-slate-700 px-4 py-2.5 text-xs font-bold text-slate-200 border border-slate-700 transition-all"
-          >
-            <FileDown className="h-4 w-4 text-emerald-400" />
-            Export Audit PDF
-          </button>
-        </div>
-      </div>
-
-      {/* TOP 6 KPI CARDS */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {/* 1. Sustainability Score */}
-        <div
-          onClick={() => onNavigateToTab('score')}
-          className="cursor-pointer rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 p-4 text-white shadow-md shadow-emerald-500/20 hover:scale-[1.02] transition"
-        >
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-bold text-emerald-100">Green Score</span>
-            <Award className="h-5 w-5 text-white" />
-          </div>
-          <div className="flex items-baseline gap-1">
-            <span className="text-3xl font-extrabold">{scores.overall}</span>
-            <span className="text-xs text-emerald-100">/ 100</span>
-          </div>
-          <div className="mt-1 text-[11px] font-bold text-emerald-100">
-            Grade {scores.grade} • Top 5%
-          </div>
-        </div>
-
-        {/* 2. Environmental Health */}
-        <div
-          onClick={() => onNavigateToTab('ai_insights')}
-          className="cursor-pointer rounded-2xl bg-white dark:bg-slate-800/90 p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-              Env Health
-            </span>
-            <div className="p-2 rounded-xl bg-teal-500/10 text-teal-500">
-              <Brain className="h-4 w-4" />
+    <div className="space-y-5 pb-10 animate-in fade-in duration-300">
+      {/* ==========================================
+          MISSION CONTROL BANNER HEADER
+      ========================================== */}
+      <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-cyan-500/30 p-4 sm:p-5 text-white shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
+          <div className="space-y-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-cyan-500/20 px-3 py-0.5 text-[11px] font-black text-cyan-400 border border-cyan-500/40 tracking-wider flex items-center gap-1.5 shadow-[0_0_10px_rgba(6,182,212,0.3)]">
+                <Activity className="h-3.5 w-3.5 animate-pulse" />
+                LICET DIGITAL TWIN COMMAND CENTER
+              </span>
+              <span className="text-xs text-slate-400 font-mono">
+                Chennai, India • Lat 13.0618° N
+              </span>
             </div>
-          </div>
-          <div className="text-xl font-extrabold text-slate-900 dark:text-white">
-            {healthScore} <span className="text-xs font-medium text-slate-400">/ 100</span>
-          </div>
-          <div className="mt-2 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-            Optimal Mesh Health
-          </div>
-        </div>
-
-        {/* 3. Today's Energy */}
-        <div className="rounded-2xl bg-white dark:bg-slate-800/90 p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-              Today's Energy
-            </span>
-            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500">
-              <Zap className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="text-xl font-extrabold text-slate-900 dark:text-white">
-            {totalEnergy.toLocaleString()}{' '}
-            <span className="text-xs font-medium text-slate-400">kWh</span>
-          </div>
-          <div className="mt-2 flex items-center text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-            <ArrowDownRight className="h-3.5 w-3.5" />
-            <span>-3.2% vs average</span>
-          </div>
-        </div>
-
-        {/* 4. Water Usage */}
-        <div className="rounded-2xl bg-white dark:bg-slate-800/90 p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-              Water Usage
-            </span>
-            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500">
-              <Droplet className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="text-xl font-extrabold text-slate-900 dark:text-white">
-            {totalWater.toLocaleString()}{' '}
-            <span className="text-xs font-medium text-slate-400">Liters</span>
-          </div>
-          <div className="mt-2 flex items-center text-[11px] font-bold text-amber-600 dark:text-amber-400">
-            <ArrowUpRight className="h-3.5 w-3.5" />
-            <span>+4.1% (Hostel leak)</span>
-          </div>
-        </div>
-
-        {/* 5. Carbon Emissions */}
-        <div className="rounded-2xl bg-white dark:bg-slate-800/90 p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-              Carbon Emissions
-            </span>
-            <div className="p-2 rounded-xl bg-purple-500/10 text-purple-500">
-              <Sparkles className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="text-xl font-extrabold text-slate-900 dark:text-white">
-            {totalCarbon.toLocaleString()}{' '}
-            <span className="text-xs font-medium text-slate-400">kg CO₂e</span>
-          </div>
-          <div className="mt-2 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-            -820 kg Solar Offset
-          </div>
-        </div>
-
-        {/* 6. Active Alerts */}
-        <div
-          onClick={() => onNavigateToTab('anomalies')}
-          className="cursor-pointer rounded-2xl bg-white dark:bg-slate-800/90 p-4 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition"
-        >
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-              Active Alerts
-            </span>
-            <div className="p-2 rounded-xl bg-red-500/10 text-red-500">
-              <ShieldAlert className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="text-xl font-extrabold text-slate-900 dark:text-white">
-            {openAnomalies.length}{' '}
-            <span className="text-xs font-medium text-red-500 font-bold">Unresolved</span>
-          </div>
-          <div className="mt-2 text-[11px] font-bold text-amber-600 dark:text-amber-400">
-            Isolation Forest Active
-          </div>
-        </div>
-      </div>
-
-      {/* SECOND ROW: AI Summary Card + Weather Card */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Gemini 2.5 AI Summary Card */}
-        <div className="lg:col-span-2 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 p-6 text-white shadow-lg space-y-4 border border-emerald-500/20">
-          <div className="flex items-center justify-between border-b border-slate-700/60 pb-3">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-emerald-400" />
-              <h3 className="text-base font-bold">Gemini 2.5 Real-Time Executive AI Summary</h3>
-            </div>
-            <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300 border border-emerald-500/30">
-              Auto-Synthesized
-            </span>
-          </div>
-
-          <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-            "Campus sustainability health is currently <strong className="text-emerald-400">Optimal (91/100)</strong>. Total daily power consumption is down by 3.2% due to solar offset generation on the Central Library rooftop. However, <strong className="text-amber-300">Hostel Block A</strong> exhibits an unexplained 18% water flow surge indicative of sub-surface pipe valve leakage. Immediate attention is recommended on <strong className="text-red-300">Server Lab B</strong> where unscheduled GPU workload runs lack dynamic HVAC chiller bypass."
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-[10px] text-slate-400 block">Est. Cost Risk</span>
-              <span className="font-extrabold text-amber-400">₹2,450 / day</span>
-            </div>
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-[10px] text-slate-400 block">Solar Credit Offset</span>
-              <span className="font-extrabold text-emerald-400">+340 kWh generated</span>
-            </div>
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10">
-              <span className="text-[10px] text-slate-400 block">Top Priority</span>
-              <span className="font-extrabold text-cyan-300">Hostel Water Leak</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Weather Card */}
-        <div className="rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-700 p-6 text-white shadow-lg space-y-4">
-          <div className="flex items-center justify-between border-b border-blue-500/40 pb-3">
-            <span className="text-xs font-bold text-blue-200">Campus Weather & Irradiance</span>
-            <CloudSun className="h-6 w-6 text-amber-300" />
-          </div>
-
-          <div className="flex items-baseline justify-between">
-            <div>
-              <div className="text-4xl font-extrabold">{weather.tempC}°C</div>
-              <div className="text-xs text-blue-100 font-medium">{weather.condition}</div>
-            </div>
-            <div className="text-right text-xs space-y-1 text-blue-100">
-              <div>Humidity: <strong className="text-white">{weather.humidityPct}%</strong></div>
-              <div>Solar Rad: <strong className="text-white">{weather.solarRadiationWm2} W/m²</strong></div>
-              <div>Campus AQI: <strong className="text-emerald-300">{avgAqi} (Good)</strong></div>
-            </div>
-          </div>
-
-          <div className="p-3 rounded-2xl bg-white/10 border border-white/10 text-xs text-blue-100">
-            ☀️ Excellent solar radiation expected until 17:30. Solar inverters operating at peak capacity.
-          </div>
-        </div>
-      </div>
-
-      {/* THIRD ROW: Weekly & Monthly Trends */}
-      <div className="rounded-3xl bg-white dark:bg-slate-800/90 p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-sm space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-700 pb-4">
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-emerald-500" />
-              Consolidated Consumption & Emission Trends
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Track multi-resource usage patterns across daily and monthly historical timelines
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-white flex items-center gap-2">
+              LOYOLA-ICAM COLLEGE OF ENGINEERING & TECHNOLOGY
+            </h1>
+            <p className="text-xs sm:text-sm text-cyan-300 font-medium max-w-3xl">
+              AI-Powered Green Campus Sustainability Command Center • Real-Time Telemetry & Predictor
             </p>
           </div>
 
-          <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold">
+          <div className="flex items-center gap-3 shrink-0">
             <button
-              onClick={() => setTrendView('weekly')}
-              className={`px-4 py-1.5 rounded-lg transition ${
-                trendView === 'weekly'
-                  ? 'bg-emerald-500 text-white shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
+              onClick={() => onNavigateToTab('copilot')}
+              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-emerald-500/30 transition-all hover:scale-105 active:scale-95"
             >
-              Weekly Trends
+              <Bot className="h-4 w-4 animate-bounce" />
+              <span>Ask Greenie AI 🌿</span>
             </button>
             <button
-              onClick={() => setTrendView('monthly')}
-              className={`px-4 py-1.5 rounded-lg transition ${
-                trendView === 'monthly'
-                  ? 'bg-emerald-500 text-white shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-              }`}
+              onClick={onExportPDF}
+              className="flex items-center gap-2 rounded-xl bg-slate-800/90 hover:bg-slate-700 px-3.5 py-2.5 text-xs font-bold text-slate-200 border border-slate-700 transition"
             >
-              Monthly Trends
+              <FileDown className="h-4 w-4 text-cyan-400" />
+              <span className="hidden sm:inline">Export Audit</span>
             </button>
           </div>
-        </div>
-
-        <div className="h-72 w-full pt-2">
-          <ResponsiveContainer width="100%" height="100%">
-            {trendView === 'weekly' ? (
-              <BarChart data={weeklyTrendData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.15} />
-                <XAxis dataKey="day" stroke="#94A3B8" fontSize={11} tickLine={false} />
-                <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#0F172A',
-                    borderColor: '#334155',
-                    borderRadius: '12px',
-                    color: '#FFF',
-                    fontSize: '12px',
-                  }}
-                />
-                <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
-                <Bar dataKey="energy" fill="#F59E0B" name="Energy (kWh)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="carbon" fill="#8B5CF6" name="Carbon (kg CO₂)" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            ) : (
-              <AreaChart data={monthlyTrendData}>
-                <defs>
-                  <linearGradient id="monthlyEnergyGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0.0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#334155" opacity={0.15} />
-                <XAxis dataKey="month" stroke="#94A3B8" fontSize={11} tickLine={false} />
-                <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#0F172A',
-                    borderColor: '#334155',
-                    borderRadius: '12px',
-                    color: '#FFF',
-                    fontSize: '12px',
-                  }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="energy"
-                  stroke="#10B981"
-                  strokeWidth={3}
-                  fillOpacity={1}
-                  fill="url(#monthlyEnergyGrad)"
-                  name="Monthly Energy (kWh)"
-                />
-              </AreaChart>
-            )}
-          </ResponsiveContainer>
         </div>
       </div>
 
-      {/* FOURTH ROW: Recent Alerts Timeline + Campus Blocks Quick Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Alerts Timeline */}
-        <div className="lg:col-span-1 rounded-3xl bg-white dark:bg-slate-800/90 p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
-            <div className="flex items-center gap-2">
-              <Clock className="h-5 w-5 text-amber-500" />
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                Recent Alerts Timeline
+      {/* ==========================================
+          MAIN COMMAND CENTER 3-COLUMN GRID
+      ========================================== */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+        {/* ==========================================
+            LEFT PANEL: CAMPUS OVERVIEW & SCORE (Col 1-3)
+        ========================================== */}
+        <div className="lg:col-span-3 space-y-4">
+          {/* CAMPUS OVERVIEW CARD */}
+          <div className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 p-4 shadow-xl backdrop-blur-md space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+              <h3 className="text-xs font-black text-slate-900 dark:text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+                <Building2 className="h-4 w-4 text-emerald-500" />
+                Campus Overview
               </h3>
+              <span className="text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/20">
+                LICET
+              </span>
             </div>
-            <button
-              onClick={() => onNavigateToTab('anomalies')}
-              className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
-            >
-              View All →
-            </button>
+
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-[10px] text-slate-400 block font-medium">Campus Area</span>
+                <span className="font-extrabold text-slate-900 dark:text-white text-sm">12.5 Acres</span>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-[10px] text-slate-400 block font-medium">Buildings</span>
+                <span className="font-extrabold text-slate-900 dark:text-white text-sm">16 Facilities</span>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-[10px] text-slate-400 block font-medium">Floors</span>
+                <span className="font-extrabold text-slate-900 dark:text-white text-sm">G + 3</span>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-[10px] text-slate-400 block font-medium">Established</span>
+                <span className="font-extrabold text-slate-900 dark:text-white text-sm">2010</span>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-[10px] text-slate-400 block font-medium">Trees</span>
+                <span className="font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">450+ Trees</span>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-[10px] text-slate-400 block font-medium">Solar Panels</span>
+                <span className="font-extrabold text-amber-500 text-sm">320 Panels</span>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-[10px] text-slate-400 block font-medium">Parking Area</span>
+                <span className="font-extrabold text-blue-500 text-sm">120 Slots</span>
+              </div>
+              <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <span className="text-[10px] text-slate-400 block font-medium">Students & Staff</span>
+                <span className="font-extrabold text-cyan-400 text-sm">2,500 / 220</span>
+              </div>
+            </div>
           </div>
 
-          <div className="space-y-4 max-h-96 overflow-y-auto pr-1">
-            {anomalies.slice(0, 4).map((a, idx) => (
-              <div
-                key={a.id}
-                onClick={() => onNavigateToTab('anomalies')}
-                className="group cursor-pointer relative pl-5 border-l-2 border-slate-200 dark:border-slate-700 hover:border-emerald-500 transition space-y-1"
-              >
-                {/* Timeline Dot */}
-                <div
-                  className={`absolute -left-[7px] top-0 h-3 w-3 rounded-full border-2 border-white dark:border-slate-800 ${
-                    a.severity === 'critical'
-                      ? 'bg-red-500'
-                      : a.severity === 'high'
-                      ? 'bg-amber-500'
-                      : 'bg-emerald-500'
-                  }`}
-                ></div>
+          {/* LARGE SUSTAINABILITY SCORE CARD */}
+          <div className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 p-4 shadow-xl backdrop-blur-md text-center space-y-3">
+            <h3 className="text-xs font-black text-slate-900 dark:text-cyan-400 uppercase tracking-widest flex items-center justify-center gap-1.5">
+              <Award className="h-4 w-4 text-emerald-500" />
+              Sustainability Score
+            </h3>
 
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-900 dark:text-white">
-                    {a.buildingName}
-                  </span>
-                  <span className="text-[10px] text-slate-400 font-mono">{a.timestamp}</span>
-                </div>
-
-                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium line-clamp-1">
-                  {a.title}
-                </p>
-
-                <p className="text-[11px] text-slate-400 line-clamp-2">{a.description}</p>
+            {/* Circular Gauge / Score Ring */}
+            <div className="relative mx-auto w-32 h-32 flex items-center justify-center">
+              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                <path
+                  className="text-slate-200 dark:text-slate-800"
+                  strokeWidth="3.5"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path
+                  className="text-emerald-500 transition-all duration-1000 ease-out"
+                  strokeDasharray="89, 100"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  stroke="currentColor"
+                  fill="none"
+                  d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter">
+                  89<span className="text-xs font-normal text-slate-400">/100</span>
+                </span>
+                <span className="text-[10px] font-black uppercase text-emerald-500 tracking-wider">
+                  Excellent
+                </span>
               </div>
-            ))}
+            </div>
+
+            {/* 30-Day Sparkline Trend Chart */}
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80">
+              <div className="flex items-center justify-between text-[10px] font-bold text-slate-400 mb-1">
+                <span>TREND (Last 30 Days)</span>
+                <span className="text-emerald-500 flex items-center gap-0.5">
+                  <ArrowUpRight className="h-3 w-3" /> +8% improvement
+                </span>
+              </div>
+              <div className="h-12 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={trend30DaysData}>
+                    <defs>
+                      <linearGradient id="scoreGlow" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <Area
+                      type="monotone"
+                      dataKey="score"
+                      stroke="#10B981"
+                      strokeWidth={2}
+                      fillOpacity={1}
+                      fill="url(#scoreGlow)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Campus Blocks Digital Telemetry Grid */}
-        <div className="lg:col-span-2 rounded-3xl bg-white dark:bg-slate-800/90 p-6 border border-slate-200 dark:border-slate-700 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-emerald-500" />
-                Campus Blocks Digital Telemetry Snapshot
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                Click any building to view detailed health, energy, solar & AI predictions
-              </p>
+        {/* ==========================================
+            CENTERPIECE: AERIAL CAMPUS INTERACTIVE TWIN (Col 4-9)
+        ========================================== */}
+        <div className="lg:col-span-6 space-y-4">
+          <div className="relative rounded-2xl bg-slate-950 border border-cyan-500/40 overflow-hidden shadow-2xl group min-h-[480px]">
+            {/* High-Res Aerial Campus Imagery */}
+            <img
+              src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1600&auto=format&fit=crop&q=80"
+              alt="LICET Campus Digital Twin Aerial View"
+              className="w-full h-[520px] object-cover opacity-85 transition-all duration-700 group-hover:scale-105 filter brightness-90 contrast-110"
+            />
+
+            {/* Dark Digital Overlay & Scan Grid */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#06b6d410_1px,transparent_1px),linear-gradient(to_bottom,#06b6d410_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none" />
+
+            {/* Top Overlay Badge */}
+            <div className="absolute top-3 left-3 z-10 flex items-center gap-2 rounded-xl bg-slate-900/90 border border-cyan-500/30 px-3 py-1.5 backdrop-blur-md shadow-lg">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="text-xs font-black text-white">LIVE CAMPUS TWIN</span>
+              <span className="text-[10px] text-cyan-400 font-mono">1,420 Nodes</span>
             </div>
-            <button
-              onClick={() => onNavigateToTab('campus_map')}
-              className="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline"
+
+            {/* FLOATING OVERLAY CARDS ON CAMPUS BUILDINGS */}
+
+            {/* 1. ENERGY MONITORING OVERLAY CARD */}
+            <div
+              onClick={() => onNavigateToTab('energy')}
+              className="absolute top-[22%] left-[45%] -translate-x-1/2 z-20 cursor-pointer group/card transition-all hover:scale-105"
             >
-              Open Interactive Map →
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {buildings.map((b) => (
-              <div
-                key={b.id}
-                onClick={() => onSelectBuilding(b.id)}
-                className="group cursor-pointer rounded-2xl bg-slate-50 dark:bg-slate-700/40 p-4 border border-slate-200/80 dark:border-slate-700/60 hover:border-emerald-500 dark:hover:border-emerald-500 hover:shadow-md transition space-y-2"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900 dark:text-white group-hover:text-emerald-500 transition">
-                    {b.name}
-                  </span>
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold ${
-                      b.status === 'green'
-                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                        : b.status === 'yellow'
-                        ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                        : 'bg-red-500/10 text-red-600 dark:text-red-400'
-                    }`}
-                  >
-                    Rating {b.efficiencyRating}
-                  </span>
+              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-cyan-500/50 p-2.5 backdrop-blur-md shadow-[0_0_15px_rgba(6,182,212,0.3)] text-white text-xs">
+                <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
+                  <Zap className="h-4 w-4 animate-pulse" />
                 </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-200/60 dark:border-slate-700/60">
-                  <div>
-                    <span className="text-[10px] text-slate-400 block">Energy Load</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">
-                      {b.currentEnergyKwh} kWh
-                    </span>
+                <div>
+                  <div className="font-extrabold flex items-center gap-1 text-[11px] text-cyan-300">
+                    ENERGY MONITORING
                   </div>
-                  <div>
-                    <span className="text-[10px] text-slate-400 block">Water Flow</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">
-                      {b.currentWaterLiters.toLocaleString()} L
-                    </span>
-                  </div>
+                  <div className="text-xs font-black text-white">Consumption: 180 kW</div>
+                  <div className="text-[10px] text-emerald-400 font-semibold">Status: Normal</div>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* 2. WATER MANAGEMENT OVERLAY CARD */}
+            <div
+              onClick={() => onNavigateToTab('water')}
+              className="absolute top-[68%] left-[20%] z-20 cursor-pointer group/card transition-all hover:scale-105"
+            >
+              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-blue-500/50 p-2.5 backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.3)] text-white text-xs">
+                <div className="p-1.5 rounded-lg bg-blue-500/20 text-blue-400">
+                  <Droplet className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="font-extrabold text-[11px] text-blue-300">WATER MANAGEMENT</div>
+                  <div className="text-xs font-black text-white">Usage Today: 4,200 L</div>
+                  <div className="text-[10px] text-emerald-400 font-semibold">Status: Normal</div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. AIR QUALITY OVERLAY CARD */}
+            <div
+              onClick={() => onNavigateToTab('air_quality')}
+              className="absolute top-[62%] right-[18%] z-20 cursor-pointer group/card transition-all hover:scale-105"
+            >
+              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-emerald-500/50 p-2.5 backdrop-blur-md shadow-[0_0_15px_rgba(16,185,129,0.3)] text-white text-xs">
+                <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
+                  <Wind className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="font-extrabold text-[11px] text-emerald-300">AIR QUALITY</div>
+                  <div className="text-xs font-black text-white">AQI: 42 (Good)</div>
+                  <div className="text-[10px] text-emerald-400 font-semibold">Status: Good</div>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. SOLAR PV SYSTEM OVERLAY CARD */}
+            <div
+              onClick={() => onNavigateToTab('solar')}
+              className="absolute top-[12%] left-[18%] z-20 cursor-pointer group/card transition-all hover:scale-105"
+            >
+              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-amber-500/50 p-2.5 backdrop-blur-md shadow-[0_0_15px_rgba(245,158,11,0.3)] text-white text-xs">
+                <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
+                  <Sun className="h-4 w-4 animate-spin-slow" />
+                </div>
+                <div>
+                  <div className="font-extrabold text-[11px] text-amber-300">SOLAR PV SYSTEM</div>
+                  <div className="text-xs font-black text-white">Capacity: 350 kWp</div>
+                  <div className="text-[10px] text-amber-400 font-semibold">Status: Generating (142 kW)</div>
+                </div>
+              </div>
+            </div>
+
+            {/* 5. WEATHER STATION OVERLAY CARD */}
+            <div className="absolute top-[12%] right-[12%] z-20 cursor-pointer group/card transition-all hover:scale-105">
+              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-cyan-500/50 p-2.5 backdrop-blur-md text-white text-xs">
+                <div className="p-1.5 rounded-lg bg-cyan-500/20 text-cyan-400">
+                  <Compass className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="font-extrabold text-[11px] text-cyan-300">WEATHER STATION</div>
+                  <div className="text-xs font-black text-white">32°C • Humidity: 62%</div>
+                  <div className="text-[10px] text-slate-300">Wind: 12 km/h</div>
+                </div>
+              </div>
+            </div>
+
+            {/* 6. PARKING SYSTEM OVERLAY CARD */}
+            <div className="absolute bottom-[10%] left-[42%] -translate-x-1/2 z-20 cursor-pointer group/card transition-all hover:scale-105">
+              <div className="flex items-center gap-2 rounded-xl bg-slate-900/90 border border-purple-500/50 p-2.5 backdrop-blur-md text-white text-xs">
+                <div className="p-1.5 rounded-lg bg-purple-500/20 text-purple-400">
+                  <Car className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="font-extrabold text-[11px] text-purple-300">PARKING SYSTEM</div>
+                  <div className="text-xs font-black text-white">Occupied: 78 / 120</div>
+                  <div className="text-[10px] text-emerald-400 font-semibold">Availability: 35%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ==========================================
+            RIGHT PANEL: REAL-TIME METRICS & CARBON (Col 10-12)
+        ========================================== */}
+        <div className="lg:col-span-3 space-y-4">
+          {/* REAL-TIME METRICS CARD */}
+          <div className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 p-4 shadow-xl backdrop-blur-md space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+              <h3 className="text-xs font-black text-slate-900 dark:text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+                <Activity className="h-4 w-4 text-emerald-500" />
+                Real-Time Metrics
+              </h3>
+              <span className="text-[10px] text-slate-400 font-mono">Live Sync</span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <div className="flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-emerald-500" />
+                  <span className="font-bold text-slate-700 dark:text-slate-300">Energy Consumption</span>
+                </div>
+                <span className="font-black text-slate-900 dark:text-white">180 kW</span>
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <div className="flex items-center gap-2">
+                  <Sun className="h-4 w-4 text-amber-500" />
+                  <span className="font-bold text-slate-700 dark:text-slate-300">Solar Generation</span>
+                </div>
+                <span className="font-black text-amber-500">142 kW</span>
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <div className="flex items-center gap-2">
+                  <Droplet className="h-4 w-4 text-blue-500" />
+                  <span className="font-bold text-slate-700 dark:text-slate-300">Water Usage</span>
+                </div>
+                <span className="font-black text-slate-900 dark:text-white">4,200 L</span>
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <div className="flex items-center gap-2">
+                  <Car className="h-4 w-4 text-purple-500" />
+                  <span className="font-bold text-slate-700 dark:text-slate-300">EV Chargers</span>
+                </div>
+                <span className="font-black text-emerald-400">4 Active</span>
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <div className="flex items-center gap-2">
+                  <Wind className="h-4 w-4 text-teal-500" />
+                  <span className="font-bold text-slate-700 dark:text-slate-300">Air Quality Index</span>
+                </div>
+                <span className="font-black text-emerald-400">42 (Good)</span>
+              </div>
+
+              <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60">
+                <div className="flex items-center gap-2">
+                  <Trash2 className="h-4 w-4 text-slate-400" />
+                  <span className="font-bold text-slate-700 dark:text-slate-300">Waste Generated</span>
+                </div>
+                <span className="font-black text-slate-900 dark:text-white">120 kg</span>
+              </div>
+            </div>
+          </div>
+
+          {/* CARBON FOOTPRINT CARD WITH WEEKLY BAR CHART */}
+          <div className="rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 p-4 shadow-xl backdrop-blur-md space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+              <h3 className="text-xs font-black text-slate-900 dark:text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+                <Leaf className="h-4 w-4 text-teal-400" />
+                Carbon Footprint
+              </h3>
+              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                -8% This Week
+              </span>
+            </div>
+
+            <div className="flex items-baseline justify-between">
+              <div>
+                <span className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                  2.3 <span className="text-xs font-normal text-slate-400">tCO₂e Today</span>
+                </span>
+              </div>
+              <span className="text-[11px] text-slate-400 font-medium">Daily Target: &lt; 3.0 t</span>
+            </div>
+
+            <div className="h-28 w-full pt-1">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={carbonWeeklyData}>
+                  <XAxis dataKey="day" stroke="#94A3B8" fontSize={10} tickLine={false} axisLine={false} />
+                  <Bar dataKey="co2" fill="#10B981" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ==========================================
+          BOTTOM ROW: 4 SECTIONS (Nav, Blueprint, Pie Chart, Greenie AI Insights)
+      ========================================== */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-4 items-stretch">
+        {/* SECTION 1: BOTTOM NAVIGATION MENU (Col 1-3) */}
+        <div className="lg:col-span-3 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 p-4 shadow-xl backdrop-blur-md flex flex-col justify-between space-y-3">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-2">
+            <h3 className="text-xs font-black text-slate-900 dark:text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+              <Sliders className="h-4 w-4 text-emerald-500" />
+              Navigation Menu
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-2 gap-1.5 text-xs">
+            {navMenuItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onNavigateToTab(item.id)}
+                  className={`flex items-center gap-2 p-2 rounded-xl text-left font-bold transition ${
+                    item.highlight
+                      ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-emerald-500'
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* SECTION 2: CAMPUS BLUEPRINT & SELECTED BUILDING (Col 4-6) */}
+        <div className="lg:col-span-3 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 p-4 shadow-xl backdrop-blur-md space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+            <h3 className="text-xs font-black text-slate-900 dark:text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+              <Layers className="h-4 w-4 text-cyan-400" />
+              Campus Blueprint & Building
+            </h3>
+            <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+              Status: Optimal
+            </span>
+          </div>
+
+          {/* Blueprint SVG Diagram */}
+          <div className="relative h-28 rounded-xl bg-slate-950 border border-cyan-500/30 p-2 flex items-center justify-center overflow-hidden">
+            <svg className="w-full h-full text-cyan-500/40" viewBox="0 0 200 100">
+              <rect x="10" y="10" width="80" height="80" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="3 3" />
+              <rect x="100" y="10" width="90" height="40" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              <rect x="100" y="55" width="90" height="35" fill="none" stroke="currentColor" strokeWidth="1.5" />
+              <circle cx="50" cy="50" r="15" fill="#06B6D420" stroke="#06B6D4" strokeWidth="1" />
+              <text x="50" y="53" textAnchor="middle" fill="#06B6D4" fontSize="8" fontWeight="bold">MAIN</text>
+            </svg>
+            <div className="absolute bottom-1 right-2 text-[9px] font-mono text-cyan-400">
+              LICET BLUEPRINT v2.4
+            </div>
+          </div>
+
+          {/* Selected Building Details */}
+          <div className="space-y-1 text-xs">
+            <div className="font-extrabold text-slate-900 dark:text-white flex items-center justify-between">
+              <span>{selectedBuilding.name}</span>
+              <span className="text-[10px] font-mono text-slate-400">{selectedBuilding.code}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-600 dark:text-slate-300 pt-1">
+              <div>Floors: <span className="font-bold text-slate-900 dark:text-white">G + 3</span></div>
+              <div>Built-up: <span className="font-bold text-slate-900 dark:text-white">65,000 sq.ft</span></div>
+              <div>Function: <span className="font-bold text-slate-900 dark:text-white">Academic & Admin</span></div>
+              <div>Health: <span className="font-bold text-emerald-400">100% Optimal</span></div>
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 3: ENERGY BREAKDOWN PIE CHART (Col 7-9) */}
+        <div className="lg:col-span-3 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 p-4 shadow-xl backdrop-blur-md space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+            <h3 className="text-xs font-black text-slate-900 dark:text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+              <PieIcon className="h-4 w-4 text-amber-400" />
+              Energy Breakdown
+            </h3>
+            <span className="text-xs font-black text-emerald-400">Total 180 kW</span>
+          </div>
+
+          <div className="flex items-center justify-between gap-2">
+            {/* Donut Chart */}
+            <div className="h-28 w-28 shrink-0 relative flex items-center justify-center">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={energyBreakdownData}
+                    innerRadius={28}
+                    outerRadius={42}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {energyBreakdownData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span className="text-xs font-black text-slate-900 dark:text-white">180</span>
+                <span className="text-[8px] font-bold text-slate-400 uppercase">kW</span>
+              </div>
+            </div>
+
+            {/* Legend */}
+            <div className="space-y-1 text-[11px] w-full">
+              {energyBreakdownData.map((item) => (
+                <div key={item.name} className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="text-slate-600 dark:text-slate-300 font-medium">{item.name}</span>
+                  </div>
+                  <span className="font-extrabold text-slate-900 dark:text-white">{item.value}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 4: GREENIE AI INSIGHTS & ALERTS (Col 10-12) */}
+        <div className="lg:col-span-3 rounded-2xl bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 p-4 shadow-xl backdrop-blur-md space-y-3 flex flex-col justify-between">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+            <h3 className="text-xs font-black text-slate-900 dark:text-cyan-400 uppercase tracking-widest flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-emerald-400 animate-pulse" />
+              Greenie AI Insights
+            </h3>
+            <span className="text-[10px] font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">
+              Live AI
+            </span>
+          </div>
+
+          <div className="space-y-2 max-h-40 overflow-y-auto pr-1 text-xs">
+            {aiInsights.map((insight) => {
+              const Icon = insight.icon;
+              return (
+                <div
+                  key={insight.id}
+                  className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-700/60 flex items-start gap-2 group hover:border-emerald-500/40 transition"
+                >
+                  <div className={`p-1 rounded-lg ${insight.color} shrink-0 mt-0.5`}>
+                    <Icon className="h-3.5 w-3.5" />
+                  </div>
+                  <div className="space-y-0.5 flex-1">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-900 dark:text-white text-[11px]">
+                        {insight.title}
+                      </span>
+                      <span className="text-[9px] font-extrabold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded">
+                        {insight.confidence}%
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-slate-600 dark:text-slate-300 leading-tight">
+                      {insight.message}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

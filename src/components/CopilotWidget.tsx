@@ -36,11 +36,12 @@ export const CopilotWidget: React.FC<CopilotProps> = ({
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const samplePrompts = [
-    'Why is electricity high today?',
-    'Which building wastes the most water?',
-    'Predict tomorrow\'s energy usage.',
-    'How can I improve the sustainability score?',
-    'Show carbon emissions.',
+    'How is LICET performing today?',
+    'Show energy usage.',
+    'Predict tomorrow\'s electricity.',
+    'Any water leaks?',
+    'Suggest improvements.',
+    'Explain today\'s sustainability score.',
   ];
 
   useEffect(() => {

@@ -26,6 +26,8 @@ import { PredictiveMaintenanceView } from './components/PredictiveMaintenanceVie
 import { InstitutionalBenchmarkingView } from './components/InstitutionalBenchmarkingView';
 import { CopilotWidget } from './components/CopilotWidget';
 import { LoginView } from './components/LoginView';
+import { SplashScreen } from './components/SplashScreen';
+import { LoadingScreen } from './components/LoadingScreen';
 
 import {
   Building,
@@ -72,6 +74,12 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<User>(CURRENT_USER);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
 
+  // Splash & Loading Screen State
+  const [showSplash, setShowSplash] = useState<boolean>(true);
+  const [isAuthenticating, setIsAuthenticating] = useState<boolean>(false);
+  const [pendingLoginEmail, setPendingLoginEmail] = useState<string>('admin@licet.ac.in');
+  const [pendingIsGuest, setPendingIsGuest] = useState<boolean>(false);
+
   // Login Simulation & Local Storage Persistence State
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
     return localStorage.getItem('gcdt_logged_in') === 'true';
@@ -81,31 +89,42 @@ export default function App() {
   });
   const [welcomeSnackbar, setWelcomeSnackbar] = useState<string | null>(null);
 
-  const triggerWelcomeSnackbar = () => {
-    setWelcomeSnackbar('Welcome to Green Campus Digital Twin!');
+  const triggerWelcomeSnackbar = (message = 'Welcome back!') => {
+    setWelcomeSnackbar(message);
     setTimeout(() => {
       setWelcomeSnackbar(null);
     }, 4000);
   };
 
-  const handleLogin = (email: string) => {
-    localStorage.setItem('gcdt_logged_in', 'true');
-    localStorage.setItem('gcdt_guest_mode', 'false');
-    localStorage.setItem('gcdt_user_email', email);
-    setIsLoggedIn(true);
-    setIsGuestMode(false);
-    setCurrentUser((prev) => ({ ...prev, email }));
-    setActiveTab('dashboard');
-    triggerWelcomeSnackbar();
+  const handleStartLogin = (email: string) => {
+    setPendingLoginEmail(email);
+    setPendingIsGuest(false);
+    setIsAuthenticating(true);
   };
 
-  const handleGuestLogin = () => {
-    localStorage.setItem('gcdt_logged_in', 'true');
-    localStorage.setItem('gcdt_guest_mode', 'true');
-    setIsLoggedIn(true);
-    setIsGuestMode(true);
+  const handleStartGuestLogin = () => {
+    setPendingIsGuest(true);
+    setIsAuthenticating(true);
+  };
+
+  const handleFinishLoadingAndEnter = () => {
+    if (pendingIsGuest) {
+      localStorage.setItem('gcdt_logged_in', 'true');
+      localStorage.setItem('gcdt_guest_mode', 'true');
+      setIsLoggedIn(true);
+      setIsGuestMode(true);
+      triggerWelcomeSnackbar('Welcome, Guest! Demo mode active.');
+    } else {
+      localStorage.setItem('gcdt_logged_in', 'true');
+      localStorage.setItem('gcdt_guest_mode', 'false');
+      localStorage.setItem('gcdt_user_email', pendingLoginEmail);
+      setIsLoggedIn(true);
+      setIsGuestMode(false);
+      setCurrentUser((prev) => ({ ...prev, email: pendingLoginEmail }));
+      triggerWelcomeSnackbar('Welcome back to LICET Command Center!');
+    }
+    setIsAuthenticating(false);
     setActiveTab('dashboard');
-    triggerWelcomeSnackbar();
   };
 
   const handleLogout = () => {
@@ -114,6 +133,7 @@ export default function App() {
     localStorage.removeItem('gcdt_user_email');
     setIsLoggedIn(false);
     setIsGuestMode(false);
+    setShowSplash(true);
   };
 
   // Core Data States
@@ -239,12 +259,34 @@ export default function App() {
 
   const currentBuilding = buildings.find((b) => b.id === selectedBuildingId) || buildings[0];
 
-  // If user is not logged in, show Login Screen
+  // 1. Show Splash Screen if showSplash is true
+  if (showSplash) {
+    return (
+      <SplashScreen
+        durationMs={2500}
+        onFinish={() => {
+          setShowSplash(false);
+        }}
+      />
+    );
+  }
+
+  // 2. Show Loading Screen if authenticating
+  if (isAuthenticating) {
+    return (
+      <LoadingScreen
+        durationMs={2500}
+        onComplete={handleFinishLoadingAndEnter}
+      />
+    );
+  }
+
+  // 3. If user is not logged in, show Login Screen
   if (!isLoggedIn) {
     return (
       <LoginView
-        onLogin={handleLogin}
-        onGuestLogin={handleGuestLogin}
+        onLogin={handleStartLogin}
+        onGuestLogin={handleStartGuestLogin}
         themeMode={themeMode}
         setThemeMode={setThemeMode}
       />
@@ -347,18 +389,14 @@ export default function App() {
               />
             )}
 
-            {activeTab === 'building_details' && (
-              <BuildingDetailsView
-                building={currentBuilding}
-                telemetryHistory={telemetryHistory.filter((t) => t.buildingId === currentBuilding.id)}
-                recommendations={recommendations}
-                anomalies={anomalies}
-                onBack={() => setActiveTab('buildings')}
-                onApplyRecommendation={handleApplyRecommendation}
-              />
-            )}
-
-            {activeTab === 'buildings' && (
+            {(activeTab === 'buildings' ||
+              activeTab === 'building_details' ||
+              activeTab === 'energy' ||
+              activeTab === 'water' ||
+              activeTab === 'air_quality' ||
+              activeTab === 'solar' ||
+              activeTab === 'waste' ||
+              activeTab === 'carbon') && (
               <BuildingDetailsView
                 building={currentBuilding}
                 telemetryHistory={telemetryHistory.filter((t) => t.buildingId === currentBuilding.id)}
