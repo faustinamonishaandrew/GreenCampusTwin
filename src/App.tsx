@@ -319,6 +319,7 @@ export default function App() {
         onOpenAuth={() => setShowAuthModal(true)}
         isGuestMode={isGuestMode}
         onLogout={handleLogout}
+        activeTab={activeTab}
       />
 
       {/* Main Workspace Layout */}
