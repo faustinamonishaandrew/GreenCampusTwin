@@ -131,7 +131,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
   return (
     <div className="relative w-full rounded-2xl bg-slate-950 border border-emerald-500/30 overflow-hidden shadow-2xl p-4 sm:p-6 text-white min-h-[500px] flex flex-col justify-between group">
       {/* Background Architectural Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#05966915_1px,transparent_1px),linear-gradient(to_bottom,#05966915_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#8b5cf615_1px,transparent_1px),linear-gradient(to_bottom,#8b5cf615_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none" />
 
       {/* Top Banner Header Controls */}
       <div className="relative z-20 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-slate-900/80 backdrop-blur-md p-3 border border-slate-800 text-xs">
@@ -176,7 +176,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
       <div className="relative w-full h-[380px] my-auto flex items-center justify-center p-2">
         <svg
           viewBox="0 0 1000 550"
-          className="w-full h-full max-h-[440px] drop-shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+          className="w-full h-full max-h-[440px] drop-shadow-[0_0_15px_rgba(139,92,246,0.25)]"
         >
           <defs>
             {/* Glowing Stroke Filter */}
@@ -190,14 +190,14 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
 
             {/* Linear Shimmer Gradient for Energy Flow */}
             <linearGradient id="energyStream" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#10B981" stopOpacity="0.1" />
-              <stop offset="50%" stopColor="#34D399" stopOpacity="1" />
-              <stop offset="100%" stopColor="#06B6D4" stopOpacity="0.1" />
+              <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.1" />
+              <stop offset="50%" stopColor="#6ee7b7" stopOpacity="1" />
+              <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.1" />
             </linearGradient>
 
             {/* Solar Panel Cell Shimmer Pattern */}
             <pattern id="solarGridPattern" width="16" height="12" patternUnits="userSpaceOnUse">
-              <rect width="14" height="10" fill="#0F172A" stroke="#38BDF8" strokeWidth="0.8" opacity="0.7" />
+              <rect width="14" height="10" fill="#17142e" stroke="#6ee7b7" strokeWidth="0.8" opacity="0.7" />
             </pattern>
           </defs>
 
@@ -211,7 +211,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
             rx="460"
             ry="150"
             fill="none"
-            stroke="#065F46"
+            stroke="#8b5cf6"
             strokeWidth="1.5"
             strokeDasharray="6 6"
             className="animate-pulse"
@@ -220,7 +220,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
           {/* Main Central Boulevard & Driveway Pathway */}
           <path
             d="M 500 550 L 500 390 M 200 390 L 800 390"
-            stroke="#10B981"
+            stroke="#8b5cf6"
             strokeWidth="2.5"
             strokeDasharray="12 8"
             opacity="0.6"
@@ -228,17 +228,17 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
 
           {/* Front Entrance Security Gate Skeletal Outline */}
           <g transform="translate(450, 480)">
-            <rect x="0" y="0" width="100" height="18" rx="4" fill="none" stroke="#10B981" strokeWidth="1.5" filter="url(#neonGlow)" />
-            <text x="50" y="12" textAnchor="middle" fill="#34D399" fontSize="10" fontWeight="900" letterSpacing="1">
+            <rect x="0" y="0" width="100" height="18" rx="4" fill="none" stroke="#8b5cf6" strokeWidth="1.5" filter="url(#neonGlow)" />
+            <text x="50" y="12" textAnchor="middle" fill="#6ee7b7" fontSize="10" fontWeight="900" letterSpacing="1">
               LICET GATE
             </text>
           </g>
 
           {/* Front Courtyard Fountain Outline */}
           <g transform="translate(500, 390)">
-            <circle cx="0" cy="0" r="28" fill="none" stroke="#38BDF8" strokeWidth="2" />
-            <circle cx="0" cy="0" r="14" fill="none" stroke="#38BDF8" strokeWidth="1" strokeDasharray="4 4" className="animate-spin-slow" />
-            <circle cx="0" cy="0" r="4" fill="#38BDF8" className="animate-ping" />
+            <circle cx="0" cy="0" r="28" fill="none" stroke="#6ee7b7" strokeWidth="2" />
+            <circle cx="0" cy="0" r="14" fill="none" stroke="#6ee7b7" strokeWidth="1" strokeDasharray="4 4" className="animate-spin-slow" />
+            <circle cx="0" cy="0" r="4" fill="#6ee7b7" className="animate-ping" />
           </g>
 
           {/* Landscaping Trees Skeletal Vectors */}
@@ -249,10 +249,10 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
           ].map(([tx, ty], i) => (
             <g key={`tree-${i}`} transform={`translate(${tx}, ${ty})`}>
               {/* Tree Trunk */}
-              <line x1="0" y1="0" x2="0" y2="-18" stroke="#059669" strokeWidth="1.5" />
+              <line x1="0" y1="0" x2="0" y2="-18" stroke="#34d399" strokeWidth="1.5" />
               {/* Tree Canopy Circles */}
-              <circle cx="0" cy="-28" r="14" fill="none" stroke="#10B981" strokeWidth="1" opacity="0.8" />
-              <circle cx="0" cy="-28" r="8" fill="none" stroke="#34D399" strokeWidth="0.8" strokeDasharray="2 2" />
+              <circle cx="0" cy="-28" r="14" fill="none" stroke="#6ee7b7" strokeWidth="1" opacity="0.8" />
+              <circle cx="0" cy="-28" r="8" fill="none" stroke="#a7f3d0" strokeWidth="0.8" strokeDasharray="2 2" />
             </g>
           ))}
 
@@ -268,7 +268,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
               height="240"
               rx="24"
               fill="none"
-              stroke={hoveredCategory ? '#34D399' : '#059669'}
+              stroke={hoveredCategory ? '#6ee7b7' : '#8b5cf6'}
               strokeWidth="2"
               strokeDasharray="8 8"
               opacity="0.4"
@@ -284,7 +284,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
                 height="200"
                 rx="14"
                 fill="none"
-                stroke={hoveredCategory === 'energy' ? '#34D399' : '#10B981'}
+                stroke={hoveredCategory === 'energy' ? '#6ee7b7' : '#8b5cf6'}
                 strokeWidth={hoveredCategory === 'energy' ? '3' : '2'}
                 filter={hoveredCategory === 'energy' ? 'url(#neonGlow)' : undefined}
               />
@@ -300,7 +300,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
                     height="32"
                     rx="3"
                     fill="none"
-                    stroke="#38BDF8"
+                    stroke="#c084fc"
                     strokeWidth="1"
                     opacity="0.7"
                   />
@@ -308,7 +308,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
               )}
 
               {/* Wing Header Label */}
-              <text x="90" y="-8" textAnchor="middle" fill="#A7F3D0" fontSize="11" fontWeight="800">
+              <text x="90" y="-8" textAnchor="middle" fill="#a7f3d0" fontSize="11" fontWeight="800">
                 WEST WING (LABS)
               </text>
             </g>
@@ -323,7 +323,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
                 height="200"
                 rx="14"
                 fill="none"
-                stroke={hoveredCategory === 'aqi' ? '#34D399' : '#10B981'}
+                stroke={hoveredCategory === 'aqi' ? '#6ee7b7' : '#8b5cf6'}
                 strokeWidth={hoveredCategory === 'aqi' ? '3' : '2'}
                 filter={hoveredCategory === 'aqi' ? 'url(#neonGlow)' : undefined}
               />
@@ -339,7 +339,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
                     height="32"
                     rx="3"
                     fill="none"
-                    stroke="#38BDF8"
+                    stroke="#c084fc"
                     strokeWidth="1"
                     opacity="0.7"
                   />
@@ -347,7 +347,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
               )}
 
               {/* Wing Header Label */}
-              <text x="90" y="-8" textAnchor="middle" fill="#A7F3D0" fontSize="11" fontWeight="800">
+              <text x="90" y="-8" textAnchor="middle" fill="#a7f3d0" fontSize="11" fontWeight="800">
                 EAST WING (CS & EEE)
               </text>
             </g>
@@ -361,9 +361,9 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
                 width="240"
                 height="250"
                 rx="18"
-                fill="#0F172A"
+                fill="#17142e"
                 fillOpacity="0.8"
-                stroke="#34D399"
+                stroke="#8b5cf6"
                 strokeWidth="2.5"
                 filter="url(#neonGlow)"
               />
@@ -374,13 +374,13 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
                   key={`arch-${idx}`}
                   d={`M ${archX} 65 L ${archX} 35 A 15 15 0 0 1 ${archX + 30} 35 L ${archX + 30} 65 Z`}
                   fill="none"
-                  stroke="#38BDF8"
+                  stroke="#c084fc"
                   strokeWidth="1.8"
                 />
               ))}
 
               {/* Official "LICET" Header Text Board */}
-              <rect x="50" y="80" width="140" height="28" rx="6" fill="#064E3B" stroke="#34D399" strokeWidth="1.5" />
+              <rect x="50" y="80" width="140" height="28" rx="6" fill="#221c3d" stroke="#6ee7b7" strokeWidth="1.5" />
               <text x="120" y="98" textAnchor="middle" fill="#FFFFFF" fontSize="13" fontWeight="900" letterSpacing="2">
                 L I C E T
               </text>
@@ -394,11 +394,11 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
                 <rect x="148" y="0" width="12" height="80" fill="none" stroke="#F8FAFC" strokeWidth="1.5" />
 
                 {/* Central Arch Doorway */}
-                <path d="M 65 80 L 65 40 A 20 20 0 0 1 105 40 L 105 80 Z" fill="none" stroke="#34D399" strokeWidth="2" />
+                <path d="M 65 80 L 65 40 A 20 20 0 0 1 105 40 L 105 80 Z" fill="none" stroke="#6ee7b7" strokeWidth="2" />
               </g>
 
               {/* Gable Triangular Roof Canopy over Portico */}
-              <path d="M 15 170 L 120 135 L 225 170 Z" fill="none" stroke="#EF4444" strokeWidth="2.5" />
+              <path d="M 15 170 L 120 135 L 225 170 Z" fill="none" stroke="#8b5cf6" strokeWidth="2.5" />
             </g>
 
             {/* 4. ROOFTOP SOLAR PV ARRAY GRID (140 kW System) */}
@@ -410,18 +410,18 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
                 height="45"
                 rx="6"
                 fill="url(#solarGridPattern)"
-                stroke={hoveredCategory === 'solar' ? '#FBBF24' : '#38BDF8'}
+                stroke={hoveredCategory === 'solar' ? '#6ee7b7' : '#8b5cf6'}
                 strokeWidth={hoveredCategory === 'solar' ? '3' : '1.8'}
                 filter={hoveredCategory === 'solar' ? 'url(#neonGlow)' : undefined}
               />
-              <text x="110" y="-6" textAnchor="middle" fill="#FBBF24" fontSize="11" fontWeight="900">
+              <text x="110" y="-6" textAnchor="middle" fill="#6ee7b7" fontSize="11" fontWeight="900">
                 ☀ 140 kW ROOFTOP SOLAR PV ARRAY
               </text>
 
               {/* Animated Solar Ray Pulses */}
-              <circle cx="30" cy="22" r="3" fill="#F59E0B" className="animate-ping" />
-              <circle cx="110" cy="22" r="3" fill="#F59E0B" className="animate-ping" />
-              <circle cx="190" cy="22" r="3" fill="#F59E0B" className="animate-ping" />
+              <circle cx="30" cy="22" r="3" fill="#6ee7b7" className="animate-ping" />
+              <circle cx="110" cy="22" r="3" fill="#6ee7b7" className="animate-ping" />
+              <circle cx="190" cy="22" r="3" fill="#6ee7b7" className="animate-ping" />
             </g>
 
             {/* 5. ANIMATED ENERGY FLOW STREAM LINES */}
@@ -460,7 +460,7 @@ export const LicetSkeletalBuilding: React.FC<LicetSkeletalBuildingProps> = ({
                 onMouseLeave={() => setHoveredCategory(null)}
                 className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-black backdrop-blur-md transition-all duration-300 transform hover:scale-115 cursor-pointer shadow-xl ${
                   isSelected || isHovered
-                    ? 'bg-emerald-500 text-white ring-4 ring-emerald-500/40 scale-110 shadow-[0_0_20px_rgba(16,185,129,0.8)]'
+                    ? 'bg-emerald-500 text-white ring-4 ring-emerald-500/40 scale-110 shadow-[0_0_20px_rgba(110,231,183,0.8)]'
                     : 'bg-slate-900/90 text-white border border-slate-700 hover:border-emerald-400'
                 }`}
               >

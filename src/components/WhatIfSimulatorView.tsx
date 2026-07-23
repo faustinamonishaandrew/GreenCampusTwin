@@ -296,14 +296,14 @@ export const WhatIfSimulatorView: React.FC<WhatIfSimulatorViewProps> = ({
               <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#0F172A',
-                  borderColor: '#334155',
+                  backgroundColor: '#17142e',
+                  borderColor: '#2b2450',
                   borderRadius: '12px',
                   color: '#FFF',
                 }}
               />
-              <Bar dataKey="cumulativeSavingsInr" fill="#22C55E" radius={[6, 6, 0, 0]} name="Cumulative Savings (INR)" />
-              <Line type="monotone" dataKey="netCashFlowInr" stroke="#3B82F6" strokeWidth={3} name="Net Break-Even Flow (INR)" />
+              <Bar dataKey="cumulativeSavingsInr" fill="#6EE7B7" radius={[6, 6, 0, 0]} name="Cumulative Savings (INR)" />
+              <Line type="monotone" dataKey="netCashFlowInr" stroke="#8B5CF6" strokeWidth={3} name="Net Break-Even Flow (INR)" />
             </ComposedChart>
           </ResponsiveContainer>
         </div>

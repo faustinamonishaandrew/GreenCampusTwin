@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Leaf, Sparkles, CheckCircle2 } from 'lucide-react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { TwinLogo } from './TwinLogo';
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -20,9 +21,10 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   durationMs = 2500,
 }) => {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
 
   useEffect(() => {
-    const stepIntervalMs = durationMs / LOADING_STEPS.length;
+    const stepIntervalMs = (durationMs - 400) / (LOADING_STEPS.length - 1);
 
     const interval = setInterval(() => {
       setCurrentStepIndex((prevIndex) => {
@@ -34,7 +36,11 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
     }, stepIntervalMs);
 
     const completionTimer = setTimeout(() => {
-      onComplete();
+      setIsExiting(true);
+      const finishTimer = setTimeout(() => {
+        onComplete();
+      }, 400); // Wait for exit zoom transition
+      return () => clearTimeout(finishTimer);
     }, durationMs);
 
     return () => {
@@ -46,51 +52,138 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   const currentStepText = LOADING_STEPS[currentStepIndex];
   const progressPct = Math.round(((currentStepIndex + 1) / LOADING_STEPS.length) * 100);
 
+  // Memoized floating particles
+  const particles = useMemo(() => {
+    return Array.from({ length: 12 }, (_, i) => ({
+      id: i,
+      left: `${10 + Math.random() * 80}%`,
+      size: 1.5 + Math.random() * 2.5,
+      duration: 4 + Math.random() * 5,
+      delay: Math.random() * 2,
+    }));
+  }, []);
+
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-6 bg-white dark:bg-[#0F172A] text-slate-900 dark:text-white select-none transition-colors">
-      {/* Background Decorative Glow */}
-      <div className="absolute w-[450px] h-[450px] bg-emerald-500/15 dark:bg-emerald-500/20 rounded-full blur-[100px] pointer-events-none animate-pulse" />
-      <div className="absolute w-72 h-72 bg-cyan-500/10 dark:bg-cyan-500/15 rounded-full blur-[80px] pointer-events-none" />
+    <div
+      id="loading-screen-container"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[#0D0B1F] text-white select-none"
+    >
+      {/* BACKGROUND LAYER: Dark Cinematic Gradient & Ambient Lighting */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0D0B1F] via-[#17142E] to-[#221C3D]" />
 
-      {/* Center Card */}
-      <div className="w-full max-w-sm rounded-3xl bg-white/80 dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 p-8 shadow-2xl backdrop-blur-xl text-center space-y-6 relative z-10 animate-in zoom-in-95 duration-300">
-        {/* Animated Logo */}
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 text-white shadow-xl shadow-emerald-500/30 ring-4 ring-emerald-500/20 animate-pulse">
-          <Leaf className="h-10 w-10 animate-bounce" />
-        </div>
+      {/* Ambient Moving Aurora Lights */}
+      <motion.div
+        className="absolute top-1/4 left-1/4 w-[350px] h-[350px] rounded-full bg-[#8B5CF6]/10 blur-[120px] pointer-events-none"
+        animate={{
+          scale: [1, 1.1, 1],
+          opacity: [0.5, 0.7, 0.5],
+        }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      <motion.div
+        className="absolute bottom-1/4 right-1/4 w-[380px] h-[380px] rounded-full bg-[#6EE7B7]/8 blur-[130px] pointer-events-none"
+        animate={{
+          scale: [1.1, 0.95, 1.1],
+          opacity: [0.4, 0.6, 0.4],
+        }}
+        transition={{
+          duration: 9,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
 
-        {/* Status Messaging */}
-        <div className="space-y-2">
-          <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center justify-center gap-2">
-            <span>Green Campus Twin</span>
-          </h2>
+      {/* Floating Bio-Digital Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {particles.map((p) => (
+          <motion.div
+            key={p.id}
+            className="absolute rounded-full bg-[#6EE7B7]/25"
+            style={{
+              left: p.left,
+              width: p.size,
+              height: p.size,
+              bottom: '-20px',
+            }}
+            animate={{
+              y: [-20, -900],
+              opacity: [0, 0.7, 0.7, 0],
+            }}
+            transition={{
+              duration: p.duration,
+              delay: p.delay,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+        ))}
+      </div>
 
-          <div className="min-h-[28px] flex items-center justify-center">
-            <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 font-mono transition-all duration-300 flex items-center gap-1.5">
-              {currentStepIndex === LOADING_STEPS.length - 1 ? (
-                <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-              ) : (
-                <Sparkles className="h-3.5 w-3.5 text-cyan-400 animate-spin" />
-              )}
-              {currentStepText}
-            </span>
-          </div>
-        </div>
+      {/* FOREGROUND CONTENT: Animated Logo, Loading step progress */}
+      <motion.div
+        className="relative z-10 flex flex-col items-center justify-center p-6 text-center max-w-sm w-full"
+        animate={isExiting ? { scale: 1.05, opacity: 0, filter: 'blur(3px)' } : { scale: 1, opacity: 1, filter: 'blur(0px)' }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+      >
+        {/* Central Twin Logo with breathing effect */}
+        <motion.div
+          animate={{
+            y: [0, -4, 0],
+          }}
+          transition={{
+            duration: 4,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+          className="relative flex items-center justify-center mb-6"
+        >
+          <TwinLogo className="w-24 h-24 sm:w-28 sm:h-28" glow={true} />
+        </motion.div>
 
-        {/* Progress Bar & Percentage */}
-        <div className="space-y-2 pt-2">
-          <div className="w-full bg-slate-100 dark:bg-slate-800 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-200 dark:border-slate-700">
+        {/* Brand Name */}
+        <h2 
+          className="text-2xl font-bold tracking-[0.2em] text-white pl-[0.2em] uppercase mb-1"
+          style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+        >
+          TWIN
+        </h2>
+        <p className="text-[10px] font-medium text-[#34D399] tracking-widest uppercase mb-12">
+          Secure Authentication
+        </p>
+
+        {/* Progress bar */}
+        <div className="w-full space-y-4 px-4">
+          <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden p-[1px] border border-white/10 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)]">
             <div
-              className="bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 h-full rounded-full transition-all duration-300 ease-out shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+              className="h-full bg-gradient-to-r from-[#8B5CF6] via-[#A855F7] to-[#6EE7B7] rounded-full shadow-[0_0_10px_rgba(110,231,183,0.55)] transition-all duration-300 ease-out"
               style={{ width: `${progressPct}%` }}
             />
           </div>
-          <div className="flex items-center justify-between text-[10px] font-mono font-bold text-slate-400">
-            <span>Initializing Engine</span>
-            <span className="text-emerald-500">{progressPct}%</span>
+
+          {/* Step text cross-fade */}
+          <div className="h-6 flex items-center justify-between text-[10px] font-mono tracking-wider">
+            <div className="flex-1 text-left">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={currentStepText}
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 0.7, x: 0 }}
+                  exit={{ opacity: 0, x: 4 }}
+                  transition={{ duration: 0.2 }}
+                  className="text-slate-300 uppercase"
+                >
+                  {currentStepText}
+                </motion.span>
+              </AnimatePresence>
+            </div>
+            <span className="text-[#6EE7B7] font-bold">{progressPct}%</span>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

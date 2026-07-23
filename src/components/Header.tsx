@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Bell,
   Sun,
@@ -14,7 +14,13 @@ import {
   Box,
   TrendingUp,
   Award,
+  AlertOctagon,
+  Lightbulb,
+  Sliders,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
+import { TwinLogo } from './TwinLogo';
 import { User, UserRole, Anomaly } from '../types';
 
 interface HeaderProps {
@@ -49,6 +55,38 @@ export const Header: React.FC<HeaderProps> = ({
 
   const openAnomalies = anomalies.filter((a) => a.status === 'open' || a.status === 'investigating');
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const predictionsSubmenu = [
+    { id: 'predictions', label: 'AI Forecasting Dashboard', icon: TrendingUp },
+    { id: 'anomalies', label: 'AI Anomalies & XAI', icon: AlertOctagon },
+    { id: 'recommendations', label: 'Recommendations', icon: Lightbulb },
+    { id: 'score', label: 'Sustainability Score', icon: Award },
+    { id: 'simulator', label: 'What-If Simulator', icon: Sliders },
+  ];
+
+  const isPredictionsActive = [
+    'predictions',
+    'anomalies',
+    'recommendations',
+    'score',
+    'simulator',
+  ].includes(activeTab);
+
   const roleLabels: Record<UserRole, string> = {
     admin: 'Administrator',
     sustainability_officer: 'Sustainability Officer',
@@ -56,28 +94,26 @@ export const Header: React.FC<HeaderProps> = ({
     student_auditor: 'Student Auditor',
   };
 
-  const navTabs = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'digital_twin', label: '3D Model', icon: Box },
-    { id: 'predictions', label: 'Analytics', icon: TrendingUp },
-    { id: 'ai_insights', label: 'AI Insights', icon: Sparkles },
-    { id: 'score', label: 'Sustainability', icon: Award },
-  ];
-
   return (
     <header className="sticky top-0 z-30 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-xs transition-colors">
       <div className="mx-auto flex h-20 sm:h-22 items-center justify-between px-4 sm:px-6 lg:px-10 gap-4 sm:gap-6 lg:gap-8">
         
         {/* LEFT SIDE: Clean minimal branding */}
-        <div className="flex items-center gap-3.5 shrink-0">
-          {/* LICET Emblem Logo */}
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-md shadow-emerald-500/25 ring-1 ring-white/30 font-black text-xs tracking-wider">
-            LICET
+        <div 
+          className="flex items-center gap-3.5 shrink-0 cursor-pointer group"
+          onClick={() => onNavigateToTab('dashboard')}
+        >
+          {/* TWIN Logo */}
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center transform transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
+            <TwinLogo className="w-10 h-10" />
           </div>
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <h1 className="text-base sm:text-lg lg:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
-                Smart Campus Digital Twin
+              <h1 
+                className="text-base sm:text-lg lg:text-xl font-bold tracking-wide text-slate-900 dark:text-white leading-tight"
+                style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+              >
+                TWIN
               </h1>
               {isGuestMode && (
                 <span className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold border border-amber-500/20">
@@ -85,32 +121,110 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               )}
             </div>
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
-              Loyola-ICAM College of Engineering & Technology
+            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 tracking-wider">
+              Smart Campus Digital Twin
             </p>
           </div>
         </div>
 
         {/* CENTER: Navigation Tabs with equal spacing */}
-        <nav className="hidden md:flex items-center justify-center gap-1.5 lg:gap-2 px-3 py-1.5 rounded-2xl bg-slate-100/80 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60 shadow-xs">
-          {navTabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => onNavigateToTab(tab.id)}
-                className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
-                  isActive
-                    ? 'bg-cyan-500/10 text-cyan-400 shadow-sm border border-cyan-500/30 font-bold'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50'
-                }`}
-              >
-                <Icon className={`h-4 w-4 ${isActive ? 'text-cyan-400' : 'text-slate-400'}`} />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
+        <nav className="hidden md:flex items-center justify-center gap-2 lg:gap-4 px-3 py-1.5 rounded-2xl bg-transparent">
+          {/* Dashboard */}
+          <button
+            onClick={() => onNavigateToTab('dashboard')}
+            className={`group relative flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold transition-colors duration-300 whitespace-nowrap ${
+              activeTab === 'dashboard'
+                ? 'text-cyan-600 dark:text-cyan-400'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+            }`}
+          >
+            <LayoutDashboard className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+            <span>Dashboard</span>
+            <span className={`absolute bottom-0 left-0 w-full h-[2px] rounded-full bg-cyan-500 dark:bg-cyan-400 transform origin-left transition-transform duration-300 ${
+              activeTab === 'dashboard' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+            }`} />
+          </button>
+
+          {/* 3D Model */}
+          <button
+            onClick={() => onNavigateToTab('digital_twin')}
+            className={`group relative flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold transition-colors duration-300 whitespace-nowrap ${
+              activeTab === 'digital_twin'
+                ? 'text-cyan-600 dark:text-cyan-400'
+                : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+            }`}
+          >
+            <Box className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+            <span>3D Model</span>
+            <span className={`absolute bottom-0 left-0 w-full h-[2px] rounded-full bg-cyan-500 dark:bg-cyan-400 transform origin-left transition-transform duration-300 ${
+              activeTab === 'digital_twin' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+            }`} />
+          </button>
+
+          {/* AI Predictions Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              aria-haspopup="true"
+              aria-expanded={isDropdownOpen}
+              className={`group relative flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-semibold transition-colors duration-300 whitespace-nowrap ${
+                isPredictionsActive || isDropdownOpen
+                  ? 'text-cyan-600 dark:text-cyan-400'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+              }`}
+            >
+              <TrendingUp className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" />
+              <span>AI Predictions</span>
+              {isDropdownOpen ? (
+                <ChevronUp className="h-3.5 w-3.5 opacity-80" />
+              ) : (
+                <ChevronDown className="h-3.5 w-3.5 opacity-80" />
+              )}
+              <span className={`absolute bottom-0 left-0 w-full h-[2px] rounded-full bg-cyan-500 dark:bg-cyan-400 transform origin-left transition-transform duration-300 ${
+                isPredictionsActive || isDropdownOpen ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+              }`} />
+            </button>
+
+            {/* Dropdown Menu */}
+            {isDropdownOpen && (
+              <div className="absolute left-0 mt-2 z-50 w-60 rounded-2xl bg-white dark:bg-slate-950 border border-slate-200/80 dark:border-slate-800/80 shadow-2xl p-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                {predictionsSubmenu.map((subitem) => {
+                  const SubIcon = subitem.icon;
+                  const isSubActive = activeTab === subitem.id;
+                  return (
+                    <button
+                      key={subitem.id}
+                      onClick={() => {
+                        onNavigateToTab(subitem.id);
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-left transition ${
+                        isSubActive
+                          ? 'bg-cyan-500/10 text-cyan-400 font-bold'
+                          : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                      }`}
+                    >
+                      <SubIcon className={`h-4 w-4 shrink-0 ${isSubActive ? 'text-cyan-400' : 'text-slate-400'}`} />
+                      <span>{subitem.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* AI Insights */}
+          <button
+            onClick={() => onNavigateToTab('ai_insights')}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
+              activeTab === 'ai_insights'
+                ? 'bg-cyan-500/10 text-cyan-400 shadow-sm border border-cyan-500/30 font-bold'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50'
+            }`}
+          >
+            <Sparkles className={`h-4 w-4 ${activeTab === 'ai_insights' ? 'text-cyan-400' : 'text-slate-400'}`} />
+            <span>AI Insights</span>
+          </button>
         </nav>
 
         {/* RIGHT SIDE: Search, Dark Mode, Notifications & Profile */}
@@ -319,25 +433,101 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* MOBILE RESPONSIVE CENTER TABS ROW */}
-      <div className="md:hidden flex items-center gap-1 overflow-x-auto px-4 py-2 border-t border-slate-100 dark:border-slate-800/60 no-scrollbar">
-        {navTabs.map((tab) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => onNavigateToTab(tab.id)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap shrink-0 transition ${
-                isActive
-                  ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
-              }`}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
+      <div className="md:hidden relative flex items-center gap-1 overflow-x-auto px-4 py-2 border-t border-slate-100 dark:border-slate-800/60 no-scrollbar">
+        {/* Dashboard */}
+        <button
+          onClick={() => {
+            onNavigateToTab('dashboard');
+            setIsMobileDropdownOpen(false);
+          }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap shrink-0 transition ${
+            activeTab === 'dashboard'
+              ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+          }`}
+        >
+          <LayoutDashboard className="h-3.5 w-3.5" />
+          <span>Dashboard</span>
+        </button>
+
+        {/* 3D Model */}
+        <button
+          onClick={() => {
+            onNavigateToTab('digital_twin');
+            setIsMobileDropdownOpen(false);
+          }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap shrink-0 transition ${
+            activeTab === 'digital_twin'
+              ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+          }`}
+        >
+          <Box className="h-3.5 w-3.5" />
+          <span>3D Model</span>
+        </button>
+
+        {/* AI Predictions Dropdown */}
+        <div className="relative shrink-0">
+          <button
+            onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition ${
+              isPredictionsActive
+                ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
+                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+            }`}
+          >
+            <TrendingUp className="h-3.5 w-3.5" />
+            <span>AI Predictions</span>
+            {isMobileDropdownOpen ? (
+              <ChevronUp className="h-3 w-3" />
+            ) : (
+              <ChevronDown className="h-3 w-3" />
+            )}
+          </button>
+
+          {/* Mobile Dropdown Options */}
+          {isMobileDropdownOpen && (
+            <div className="absolute bottom-10 left-0 z-50 w-52 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-1.5 flex flex-col gap-1 max-h-60 overflow-y-auto">
+              {predictionsSubmenu.map((subitem) => {
+                const SubIcon = subitem.icon;
+                const isSubActive = activeTab === subitem.id;
+                return (
+                  <button
+                    key={subitem.id}
+                    onClick={() => {
+                      onNavigateToTab(subitem.id);
+                      setIsMobileDropdownOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium text-left transition ${
+                      isSubActive
+                        ? 'bg-cyan-500/10 text-cyan-400 font-bold'
+                        : 'text-slate-600 dark:text-slate-400'
+                    }`}
+                  >
+                    <SubIcon className="h-3.5 w-3.5 shrink-0" />
+                    <span>{subitem.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* AI Insights */}
+        <button
+          onClick={() => {
+            onNavigateToTab('ai_insights');
+            setIsMobileDropdownOpen(false);
+          }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap shrink-0 transition ${
+            activeTab === 'ai_insights'
+              ? 'bg-cyan-500 text-slate-950 font-bold shadow-xs'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300'
+          }`}
+        >
+          <Sparkles className="h-3.5 w-3.5" />
+          <span>AI Insights</span>
+        </button>
       </div>
     </header>
   );

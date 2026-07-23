@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   LayoutDashboard,
   Box,
@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Settings,
   ChevronRight,
+  ChevronDown,
   Sparkles,
   Database,
   Network,
@@ -32,13 +33,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab,
   openAnomalyCount,
 }) => {
+  const isPredictionsActive = [
+    'predictions',
+    'anomalies',
+    'recommendations',
+    'score',
+    'simulator',
+  ].includes(activeTab);
+
+  const [isPredictionsExpanded, setIsPredictionsExpanded] = useState<boolean>(isPredictionsActive);
+
+  // Auto expand when activeTab switches to predictions/children externally
+  React.useEffect(() => {
+    if (isPredictionsActive) {
+      setIsPredictionsExpanded(true);
+    }
+  }, [activeTab, isPredictionsActive]);
+
   const mainNav = [
     { id: 'dashboard', label: 'Executive Dashboard', icon: LayoutDashboard },
     { id: 'digital_twin', label: '🏛️ Digital Twin', icon: Box, highlight: true },
     { id: 'ai_insights', label: 'AI Insights', icon: Sparkles },
     { id: 'campus_map', label: 'Campus Map', icon: MapPin },
     { id: 'buildings', label: 'Buildings', icon: Building2 },
-    { id: 'predictions', label: 'AI Predictions', icon: TrendingUp },
+  ];
+
+  const predictionsSubmenu = [
+    { id: 'predictions', label: 'AI Forecasting', icon: TrendingUp },
     {
       id: 'anomalies',
       label: 'AI Anomalies & XAI',
@@ -101,20 +122,88 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </div>
 
                 <div className="hidden md:flex items-center gap-1.5">
-                  {item.badge !== undefined && (
-                    <span
-                      className={`rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
-                        isActive ? 'bg-slate-950/20 text-slate-950' : 'bg-orange-500 text-white'
-                      }`}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
                   {isActive && <ChevronRight className="h-3.5 w-3.5 opacity-80" />}
                 </div>
               </button>
             );
           })}
+
+          {/* Collapsible AI Predictions Parent */}
+          <div className="space-y-1">
+            <button
+              onClick={() => setIsPredictionsExpanded(!isPredictionsExpanded)}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group ${
+                isPredictionsActive
+                  ? 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-bold'
+                  : 'text-slate-400 hover:bg-slate-800/80 hover:text-white'
+              }`}
+              title="AI Predictions"
+            >
+              <div className="flex items-center gap-2.5">
+                <TrendingUp
+                  className={`h-4 w-4 shrink-0 ${
+                    isPredictionsActive ? 'text-cyan-400' : 'text-slate-400 group-hover:text-cyan-400'
+                  }`}
+                />
+                <span className="hidden md:inline truncate">AI Predictions</span>
+              </div>
+
+              <div className="hidden md:flex items-center gap-1.5">
+                {openAnomalyCount > 0 && !isPredictionsExpanded && (
+                  <span className="rounded-full px-1.5 py-0.2 text-[10px] font-bold bg-orange-500 text-white animate-pulse">
+                    {openAnomalyCount}
+                  </span>
+                )}
+                {isPredictionsExpanded ? (
+                  <ChevronDown className="h-3.5 w-3.5 opacity-80 text-slate-400" />
+                ) : (
+                  <ChevronRight className="h-3.5 w-3.5 opacity-80 text-slate-400" />
+                )}
+              </div>
+            </button>
+
+            {/* Expandable Submenu Items */}
+            {isPredictionsExpanded && (
+              <div className="pl-1 md:pl-4 space-y-1 transition-all duration-200">
+                {predictionsSubmenu.map((subitem) => {
+                  const SubIcon = subitem.icon;
+                  const isSubActive = activeTab === subitem.id;
+
+                  return (
+                    <button
+                      key={subitem.id}
+                      onClick={() => setActiveTab(subitem.id)}
+                      className={`w-full flex items-center justify-between px-3 py-1.5 rounded-xl text-[11px] font-medium transition-all group ${
+                        isSubActive
+                          ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-sm shadow-cyan-500/10'
+                          : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+                      }`}
+                      title={subitem.label}
+                    >
+                      <div className="flex items-center gap-2">
+                        <SubIcon
+                          className={`h-3.5 w-3.5 shrink-0 ${
+                            isSubActive ? 'text-slate-950' : 'text-slate-500 group-hover:text-cyan-400'
+                          }`}
+                        />
+                        <span className="hidden md:inline truncate">{subitem.label}</span>
+                      </div>
+
+                      {subitem.badge !== undefined && (
+                        <span
+                          className={`rounded-full px-1.5 py-0.2 text-[9px] font-bold ${
+                            isSubActive ? 'bg-slate-950/20 text-slate-950' : 'bg-orange-500 text-white'
+                          }`}
+                        >
+                          {subitem.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* AI Innovation Suite Section */}

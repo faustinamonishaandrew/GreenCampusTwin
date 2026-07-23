@@ -18,6 +18,7 @@ import {
   Leaf,
   HelpCircle,
 } from 'lucide-react';
+import { TwinLogo } from './TwinLogo';
 
 interface LoginViewProps {
   onLogin: (email: string, role?: string) => void;
@@ -72,9 +73,7 @@ export const LoginView: React.FC<LoginViewProps> = ({
       {/* Top Header Bar: Theme Toggle */}
       <div className="w-full max-w-5xl flex items-center justify-between py-2 z-10">
         <div className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-600 text-white shadow-md shadow-emerald-500/20">
-            <Leaf className="h-5 w-5" />
-          </div>
+          <TwinLogo className="w-9 h-9" />
           <span className="font-extrabold tracking-tight text-sm text-slate-900 dark:text-white">
             LICET COMMAND CENTER
           </span>
@@ -125,8 +124,8 @@ export const LoginView: React.FC<LoginViewProps> = ({
       <div className="w-full max-w-md bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-cyan-500/30 shadow-2xl rounded-3xl p-6 sm:p-8 space-y-5 relative z-10 my-6 animate-in fade-in zoom-in-95 duration-300 backdrop-blur-xl">
         {/* Logo & Header Branding */}
         <div className="text-center space-y-2">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 text-white shadow-xl shadow-emerald-500/30 ring-4 ring-emerald-500/20 transform transition hover:scale-105">
-            <Leaf className="h-8 w-8" />
+          <div className="mx-auto flex h-16 w-16 items-center justify-center transform transition hover:scale-105">
+            <TwinLogo className="w-16 h-16" glow={true} />
           </div>
 
           <div>

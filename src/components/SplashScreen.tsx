@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { Leaf, Sparkles, Loader2 } from 'lucide-react';
+import React, { useEffect, useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { TwinLogo } from './TwinLogo';
 
 interface SplashScreenProps {
   onFinish: () => void;
@@ -8,81 +9,238 @@ interface SplashScreenProps {
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({
   onFinish,
-  durationMs = 2500,
+  durationMs = 2800,
 }) => {
-  const [fadeState, setFadeState] = useState<'in' | 'out'>('in');
+  const [progress, setProgress] = useState(0);
+  const [isExiting, setIsExiting] = useState(false);
 
+  // Smooth progress increment using requestAnimationFrame
   useEffect(() => {
-    // Start fade out slightly before completion
-    const fadeOutTimer = setTimeout(() => {
-      setFadeState('out');
-    }, Math.max(durationMs - 400, 1000));
+    const startTime = Date.now();
+    const transitionMs = 500; // 500ms exit transition
+    const loadingDuration = Math.max(durationMs - transitionMs, 1000);
 
-    const finishTimer = setTimeout(() => {
-      onFinish();
-    }, durationMs);
+    let animationFrameId: number;
+
+    const updateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, (elapsed / loadingDuration) * 100);
+
+      setProgress(pct);
+
+      if (pct < 100) {
+        animationFrameId = requestAnimationFrame(updateProgress);
+      } else {
+        setIsExiting(true);
+        const exitTimer = setTimeout(() => {
+          onFinish();
+        }, transitionMs);
+        return () => clearTimeout(exitTimer);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(updateProgress);
 
     return () => {
-      clearTimeout(fadeOutTimer);
-      clearTimeout(finishTimer);
+      cancelAnimationFrame(animationFrameId);
     };
   }, [durationMs, onFinish]);
 
+  // Determine message based on progress percentage
+  const loadingMessage = useMemo(() => {
+    if (progress < 20) return 'Loading...';
+    if (progress < 40) return 'Loading Digital Twin...';
+    if (progress < 60) return 'Initializing AI...';
+    if (progress < 80) return 'Preparing Campus Model...';
+    return 'Loading Smart Insights...';
+  }, [progress]);
+
+  // Generate memoized floating bio-digital spores/particles
+  const particles = useMemo(() => {
+    return Array.from({ length: 15 }, (_, i) => ({
+      id: i,
+      left: `${5 + Math.random() * 90}%`,
+      size: 1.5 + Math.random() * 3,
+      duration: 5 + Math.random() * 6,
+      delay: Math.random() * 3,
+    }));
+  }, []);
+
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-between p-8 transition-opacity duration-500 bg-white dark:bg-[#0F172A] text-slate-900 dark:text-white select-none ${
-        fadeState === 'out' ? 'opacity-0 pointer-events-none' : 'opacity-100'
-      }`}
+      id="splash-screen-container"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center overflow-hidden bg-[#0D0B1F] text-white select-none"
     >
-      {/* Background Decorative Gradient Blobs */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/10 dark:bg-emerald-500/20 rounded-full blur-[120px] pointer-events-none animate-pulse" />
-      <div className="absolute top-1/4 right-1/4 w-80 h-80 bg-cyan-500/10 dark:bg-cyan-500/15 rounded-full blur-[100px] pointer-events-none" />
+      {/* 1. BACKGROUND LAYER: Dark Cinematic Gradient & Ambient Lighting */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0D0B1F] via-[#17142E] to-[#221C3D]" />
 
-      {/* Top Spacer */}
-      <div className="h-10" />
+      {/* Smooth Vignette */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0)_0%,rgba(0,0,0,0.6)_100%)] pointer-events-none" />
 
-      {/* Center Content: Animated Logo & Title */}
-      <div className="flex flex-col items-center text-center space-y-6 relative z-10 animate-in fade-in zoom-in-95 duration-700">
-        {/* Animated Official Green Campus Logo */}
-        <div className="relative flex items-center justify-center">
-          <div className="absolute inset-0 rounded-3xl bg-emerald-500/30 blur-2xl animate-ping" />
-          <div className="relative flex h-24 w-24 sm:h-28 sm:w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600 text-white shadow-2xl shadow-emerald-500/40 ring-4 ring-emerald-500/20 transform transition duration-500 hover:scale-105">
-            <Leaf className="h-12 w-12 sm:h-14 sm:w-14 animate-bounce" />
-          </div>
-        </div>
+      {/* Minimal Noise Texture */}
+      <div 
+        className="absolute inset-0 opacity-[0.015] pointer-events-none mix-blend-overlay"
+        style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.85%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}
+      />
 
-        {/* Branding Typography */}
-        <div className="space-y-2 max-w-lg">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-            Green Campus Digital Twin
+      {/* Ambient Moving Aurora Lights - Reduced intensity for subtlety */}
+      <motion.div
+        className="absolute top-1/4 left-1/4 w-[380px] h-[380px] rounded-full bg-[#8B5CF6]/8 blur-[120px] pointer-events-none"
+        animate={{
+          scale: [1, 1.15, 1],
+          opacity: [0.5, 0.7, 0.5],
+          x: [0, 20, 0],
+          y: [0, -20, 0],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+      <motion.div
+        className="absolute bottom-1/4 right-1/4 w-[420px] h-[420px] rounded-full bg-[#6EE7B7]/8 blur-[130px] pointer-events-none"
+        animate={{
+          scale: [1.1, 0.9, 1.1],
+          opacity: [0.4, 0.6, 0.4],
+          x: [0, -30, 0],
+          y: [0, 15, 0],
+        }}
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+
+      {/* Ambient Depth Overlay */}
+      <div className="absolute inset-0 bg-black/5 backdrop-blur-[1px] pointer-events-none" />
+
+      {/* Floating Bio-Digital Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {particles.map((p) => (
+          <motion.div
+            key={p.id}
+            className="absolute rounded-full bg-[#6EE7B7]/30"
+            style={{
+              left: p.left,
+              width: p.size,
+              height: p.size,
+              bottom: '-20px',
+            }}
+            animate={{
+              y: [-20, -900],
+              opacity: [0, 0.8, 0.8, 0],
+            }}
+            transition={{
+              duration: p.duration,
+              delay: p.delay,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* 2. FOREGROUND CONTENT: Animated Logo, Title, Tagline, Progress */}
+      <motion.div
+        className="relative z-10 flex flex-col items-center justify-center p-6 text-center"
+        animate={isExiting ? { scale: 1.06, opacity: 0, filter: 'blur(4px)' } : { scale: 1, opacity: 1, filter: 'blur(0px)' }}
+        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+      >
+        {/* Central Twin Logo Component with breathing animation */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{
+            opacity: 1,
+            scale: 1,
+            y: [0, -8, 0],
+          }}
+          transition={{
+            opacity: { duration: 1, ease: 'easeOut' },
+            scale: { duration: 1, ease: 'easeOut' },
+            y: {
+              duration: 5,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: 1,
+            },
+          }}
+          className="relative flex items-center justify-center"
+        >
+          {/* Gentle glow behind the logo */}
+          <motion.div
+            className="absolute inset-0 rounded-full bg-purple-500/20 blur-[60px] pointer-events-none"
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <TwinLogo className="w-48 h-48 md:w-56 md:h-56" glow={false} />
+        </motion.div>
+
+        {/* App Title Display */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: 'easeOut' }}
+          className="mt-8 space-y-2 relative z-10"
+        >
+          <h1 
+            className="text-5xl md:text-7xl font-bold tracking-[0.2em] text-white leading-none pl-[0.2em]"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            TWIN
           </h1>
-          <p className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest flex items-center justify-center gap-2">
-            <Sparkles className="h-4 w-4 animate-spin-slow" />
-            AI Sustainability Command Center
-          </p>
-        </div>
 
-        {/* Circular Loading Animation */}
-        <div className="pt-4 flex flex-col items-center gap-2">
-          <div className="relative flex items-center justify-center">
-            <div className="h-10 w-10 rounded-full border-4 border-emerald-500/20 border-t-emerald-500 animate-spin" />
-            <div className="absolute h-6 w-6 rounded-full bg-emerald-500/10 animate-pulse" />
+          {/* Premium Tagline: Nature Can't Speak. But You Can. */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 1.0 }}
+            className="text-sm sm:text-base font-light text-[#6EE7B7] tracking-wider uppercase mt-4 px-4 select-none max-w-sm sm:max-w-md"
+          >
+            Nature Can't Speak. But You Can.
+          </motion.p>
+        </motion.div>
+
+        {/* Loading Progress & Rotating Message Section */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="mt-20 w-full max-w-sm space-y-4 px-4 relative z-10"
+        >
+          {/* Smooth Text Fade with AnimatePresence */}
+          <div className="h-8 flex flex-col items-center justify-center">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={loadingMessage}
+                initial={{ opacity: 0, y: 4, filter: 'blur(2px)' }}
+                animate={{ opacity: 0.9, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -4, filter: 'blur(1px)' }}
+                transition={{ duration: 0.3 }}
+                className="text-sm sm:text-base font-sans font-medium tracking-wide text-white uppercase animate-pulse bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400"
+              >
+                {loadingMessage}
+              </motion.span>
+            </AnimatePresence>
           </div>
-          <span className="text-xs font-mono font-medium text-slate-500 dark:text-slate-400">
-            Initializing Command Center...
-          </span>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      {/* Bottom Footer Text */}
-      <div className="text-center space-y-1 relative z-10 text-xs font-medium text-slate-500 dark:text-slate-400">
-        <p className="font-mono text-[11px] tracking-wider text-slate-600 dark:text-slate-300 font-bold">
-          Version 1.0
-        </p>
-        <p className="flex items-center justify-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
-          Powered by Greenie AI 🌿
-        </p>
-      </div>
+      {/* Swoosh Animated Progress Line at the Absolute Bottom */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 0.5 }}
+        className="absolute bottom-0 left-0 w-full h-[3px] bg-white/5 overflow-hidden"
+      >
+        <div
+          className="h-full bg-gradient-to-r from-transparent via-purple-500 to-[#6EE7B7] shadow-[0_0_15px_rgba(110,231,183,0.8)] transition-all duration-100 ease-out rounded-r-full relative"
+          style={{ width: `${progress}%` }}
+        >
+          <div className="absolute top-0 right-0 w-20 h-full bg-white opacity-50 blur-sm rounded-full" />
+        </div>
+      </motion.div>
     </div>
   );
 };

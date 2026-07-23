@@ -202,7 +202,7 @@ export const SustainabilityScoreView: React.FC<SustainabilityScoreViewProps> = (
                 <PolarGrid stroke="#334155" strokeDasharray="3 3" opacity={0.3} />
                 <PolarAngleAxis dataKey="dimension" stroke="#94A3B8" fontSize={11} />
                 <PolarRadiusAxis angle={30} domain={[0, 100]} stroke="#94A3B8" fontSize={10} />
-                <Radar name="This Campus" dataKey="campus" stroke="#22C55E" fill="#22C55E" fillOpacity={0.4} />
+                <Radar name="This Campus" dataKey="campus" stroke="#6EE7B7" fill="#6EE7B7" fillOpacity={0.4} />
                 <Radar name="National Avg" dataKey="nationalAvg" stroke="#94A3B8" fill="#94A3B8" fillOpacity={0.2} />
               </RadarChart>
             </ResponsiveContainer>
@@ -223,13 +223,13 @@ export const SustainabilityScoreView: React.FC<SustainabilityScoreViewProps> = (
                 <YAxis domain={[50, 100]} stroke="#94A3B8" fontSize={11} tickLine={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0F172A',
-                    borderColor: '#334155',
+                    backgroundColor: '#17142e',
+                    borderColor: '#2b2450',
                     borderRadius: '12px',
                     color: '#FFF',
                   }}
                 />
-                <Bar dataKey="score" fill="#22C55E" radius={[8, 8, 0, 0]} name="Score / 100" />
+                <Bar dataKey="score" fill="#8B5CF6" radius={[8, 8, 0, 0]} name="Score / 100" />
               </BarChart>
             </ResponsiveContainer>
           </div>

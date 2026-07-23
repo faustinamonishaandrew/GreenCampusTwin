@@ -35,6 +35,7 @@ interface BuildingDetailsViewProps {
   anomalies: Anomaly[];
   onBack: () => void;
   onApplyRecommendation: (id: string) => void;
+  onNavigateToTab: (tab: string) => void;
 }
 
 export const BuildingDetailsView: React.FC<BuildingDetailsViewProps> = ({
@@ -44,6 +45,7 @@ export const BuildingDetailsView: React.FC<BuildingDetailsViewProps> = ({
   anomalies,
   onBack,
   onApplyRecommendation,
+  onNavigateToTab,
 }) => {
   const [timeRange, setTimeRange] = useState<'24h' | 'weekly' | 'monthly' | '365d'>('monthly');
 

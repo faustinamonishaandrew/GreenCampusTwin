@@ -242,15 +242,15 @@ export const AIPredictionsView: React.FC<AIPredictionsViewProps> = ({
                 <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} unit=" kWh" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#172033',
-                    borderColor: 'rgba(255,255,255,0.08)',
+                    backgroundColor: '#17142e',
+                    borderColor: '#2b2450',
                     borderRadius: '12px',
                     color: '#F9FAFB',
                     fontSize: '12px',
                   }}
                 />
-                <Area type="monotone" dataKey="upperBoundKwh" stroke="none" fill="#06B6D4" fillOpacity={0.15} name="Upper Bound (kWh)" />
-                <Line type="monotone" dataKey="predictedEnergyKwh" stroke="#06B6D4" strokeWidth={3} dot={false} name="Forecasted kWh" />
+                <Area type="monotone" dataKey="upperBoundKwh" stroke="none" fill="#6ee7b7" fillOpacity={0.15} name="Upper Bound (kWh)" />
+                <Line type="monotone" dataKey="predictedEnergyKwh" stroke="#8b5cf6" strokeWidth={3} dot={false} name="Forecasted kWh" />
                 <Line type="monotone" dataKey="lowerBoundKwh" stroke="#94A3B8" strokeWidth={1.5} strokeDasharray="3 3" dot={false} name="Lower Bound (kWh)" />
               </ComposedChart>
             ) : (
@@ -260,14 +260,14 @@ export const AIPredictionsView: React.FC<AIPredictionsViewProps> = ({
                 <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} unit=" kWh" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#172033',
-                    borderColor: 'rgba(255,255,255,0.08)',
+                    backgroundColor: '#17142e',
+                    borderColor: '#2b2450',
                     borderRadius: '12px',
                     color: '#F9FAFB',
                     fontSize: '12px',
                   }}
                 />
-                <Bar dataKey="predicted" fill="#06B6D4" radius={[6, 6, 0, 0]} name="Forecasted kWh" />
+                <Bar dataKey="predicted" fill="#8b5cf6" radius={[6, 6, 0, 0]} name="Forecasted kWh" />
               </BarChart>
             )}
           </ResponsiveContainer>

@@ -76,6 +76,12 @@ export const DigitalTwinView: React.FC<DigitalTwinViewProps> = ({
   // Building Health Status Filter
   const [buildingHealthStatus, setBuildingHealthStatus] = useState<'normal' | 'warning' | 'high' | 'critical'>('normal');
 
+  // BIM Visualization Modes
+  const [visualizationMode, setVisualizationMode] = useState<'realistic' | 'blueDigitalTwin' | 'blueprint' | 'wireframe' | 'structural'>('realistic');
+  const [isWireframeOverlayActive, setIsWireframeOverlayActive] = useState(false);
+  const [isFlyThroughActive, setIsFlyThroughActive] = useState(false);
+  const [flyThroughLabel, setFlyThroughLabel] = useState('');
+
   // Greenie AI Side Drawer state
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState<Array<{ sender: 'user' | 'ai'; text: string; timestamp: string }>>([
@@ -740,24 +746,21 @@ export const DigitalTwinView: React.FC<DigitalTwinViewProps> = ({
 
   // Handle Camera Mode Switching
   const handleCameraModeChange = (mode: 'isometric' | 'frontFacade' | 'top' | 'firstPerson') => {
+    setIsFlyThroughActive(false); // Disable fly-through if user manually overrides camera
     setCameraMode(mode);
     if (cameraRef.current && controlsRef.current) {
       if (mode === 'frontFacade') {
-        // Direct head-on view facing the LICET entrance signboard & arches
-        cameraRef.current.position.set(0, 7, 28);
-        controlsRef.current.target.set(0, 3, 12);
+        cameraRef.current.position.set(0, 4, 28);
+        controlsRef.current.target.set(0, 2, 12);
       } else if (mode === 'top') {
-        // Direct 90 degree overhead satellite view
-        cameraRef.current.position.set(0, 55, 0.1);
-        controlsRef.current.target.set(0, 0, 0);
+        cameraRef.current.position.set(0, 45, 12);
+        controlsRef.current.target.set(0, 2, 12);
       } else if (mode === 'isometric') {
-        // 3D architectural perspective
-        cameraRef.current.position.set(0, 28, 38);
-        controlsRef.current.target.set(0, 2, 0);
+        cameraRef.current.position.set(24, 18, 38);
+        controlsRef.current.target.set(0, 2, 12);
       } else if (mode === 'firstPerson') {
-        // Ground-level entrance view facing LICET sign
-        cameraRef.current.position.set(0, 2, 22);
-        controlsRef.current.target.set(0, 2.5, 12);
+        cameraRef.current.position.set(0, 1.8, 44);
+        controlsRef.current.target.set(0, 1.8, 12);
       }
       controlsRef.current.update();
     }
@@ -840,6 +843,42 @@ export const DigitalTwinView: React.FC<DigitalTwinViewProps> = ({
 
         {/* View Mode Controls & Greenie AI Drawer */}
         <div className="flex flex-wrap items-center gap-3">
+          {/* BIM Visualization Modes Panel */}
+          <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-bold">
+            <span className="px-2 text-slate-400 font-mono text-[10px] uppercase">BIM View:</span>
+            {[
+              { id: 'realistic', label: 'Realistic', icon: <Sparkles className="h-3.5 w-3.5" /> },
+              { id: 'blueDigitalTwin', label: 'Blue Twin', icon: <Cpu className="h-3.5 w-3.5 text-cyan-400" /> },
+              { id: 'blueprint', label: 'Blueprint', icon: <Layers className="h-3.5 w-3.5 text-blue-400" /> },
+              { id: 'wireframe', label: 'Wireframe', icon: <Activity className="h-3.5 w-3.5 text-indigo-400" /> },
+              { id: 'structural', label: 'Structural', icon: <Compass className="h-3.5 w-3.5 text-rose-400" /> },
+            ].map((mode) => (
+              <button
+                key={mode.id}
+                onClick={() => setVisualizationMode(mode.id as any)}
+                className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1 ${
+                  visualizationMode === mode.id
+                    ? 'bg-slate-900 text-white dark:bg-white dark:text-slate-950 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                {mode.icon}
+                <span>{mode.label}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Wireframe Overlay Switch */}
+          <label className="flex items-center gap-2 cursor-pointer bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300">
+            <input
+              type="checkbox"
+              checked={isWireframeOverlayActive}
+              onChange={(e) => setIsWireframeOverlayActive(e.target.checked)}
+              className="rounded border-slate-300 text-cyan-500 focus:ring-cyan-500 h-3.5 w-3.5 accent-cyan-500"
+            />
+            <span>Wireframe Grid Overlay</span>
+          </label>
+
           {/* Camera View Mode Toggles */}
           <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-xs font-bold">
             <button
@@ -891,6 +930,24 @@ export const DigitalTwinView: React.FC<DigitalTwinViewProps> = ({
             </button>
           </div>
 
+          {/* Cinematic Flight Autopilot Toggle */}
+          <button
+            onClick={() => {
+              setIsFlyThroughActive(!isFlyThroughActive);
+              if (!isFlyThroughActive) {
+                setFlyThroughLabel("Approaching LICET Campus (Bird's Eye BIM View)");
+              }
+            }}
+            className={`px-4 py-2.5 rounded-2xl font-extrabold text-xs shadow-lg transition flex items-center gap-2 ${
+              isFlyThroughActive
+                ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white animate-pulse shadow-cyan-500/30'
+                : 'bg-slate-800 hover:bg-slate-700 text-white'
+            }`}
+          >
+            <Send className={`h-4 w-4 ${isFlyThroughActive ? 'animate-bounce' : ''}`} />
+            <span>{isFlyThroughActive ? '🛑 Stop Tour' : '🚀 Play Tour'}</span>
+          </button>
+
           {/* Ask Greenie AI Button */}
           <button
             onClick={() => setIsAiDrawerOpen(true)}
@@ -935,6 +992,31 @@ export const DigitalTwinView: React.FC<DigitalTwinViewProps> = ({
 
         {/* WebGL Canvas */}
         <div ref={mountRef} className="w-full h-[600px] rounded-2xl cursor-grab active:cursor-grabbing relative" />
+
+        {/* FLY-THROUGH HUD BANNER */}
+        {isFlyThroughActive && (
+          <div className="absolute bottom-6 left-6 z-30 bg-slate-950/95 border border-cyan-400/50 rounded-2xl p-4 shadow-2xl max-w-sm backdrop-blur-md text-white animate-in slide-in-from-bottom-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2.5 w-2.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500" />
+              </span>
+              <span className="text-[10px] font-mono font-bold tracking-widest uppercase text-cyan-400">
+                Cinematic Autopilot Active
+              </span>
+            </div>
+            <h4 className="text-sm font-black text-white">{flyThroughLabel}</h4>
+            <p className="text-[11px] text-slate-400 leading-normal">
+              Scanning structural geometry, active solar arrays, and live HVAC loads. Controls are automatically stabilized.
+            </p>
+            <button
+              onClick={() => setIsFlyThroughActive(false)}
+              className="w-full py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 transition font-bold text-[10px]"
+            >
+              STOP TOUR & TAKE MANUAL CONTROL
+            </button>
+          </div>
+        )}
 
         {/* 2D Projected Screen Hotspots */}
         {screenHotspots.map(
