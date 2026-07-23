@@ -82,11 +82,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   // Energy Breakdown Donut Chart Data
   const energyBreakdownData = [
-    { name: 'HVAC', value: 40, color: '#3B82F6' },
+    { name: 'HVAC', value: 40, color: '#06B6D4' },
     { name: 'Lighting', value: 25, color: '#10B981' },
-    { name: 'Labs', value: 20, color: '#F59E0B' },
+    { name: 'Labs', value: 20, color: '#F97316' },
     { name: 'IT & Servers', value: 10, color: '#8B5CF6' },
-    { name: 'Others', value: 5, color: '#06B6D4' },
+    { name: 'Others', value: 5, color: '#22D3EE' },
   ];
 
   // Carbon Weekly Bar Chart Data

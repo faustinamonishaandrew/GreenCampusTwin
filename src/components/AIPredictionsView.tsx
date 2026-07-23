@@ -214,7 +214,7 @@ export const AIPredictionsView: React.FC<AIPredictionsViewProps> = ({
               onClick={() => setForecastHorizon('24h')}
               className={`px-3 py-1.5 rounded-xl font-bold transition ${
                 forecastHorizon === '24h'
-                  ? 'bg-indigo-600 text-white shadow'
+                  ? 'bg-cyan-500 text-slate-950 shadow'
                   : 'text-slate-600 dark:text-slate-300'
               }`}
             >
@@ -224,7 +224,7 @@ export const AIPredictionsView: React.FC<AIPredictionsViewProps> = ({
               onClick={() => setForecastHorizon('7d')}
               className={`px-3 py-1.5 rounded-xl font-bold transition ${
                 forecastHorizon === '7d'
-                  ? 'bg-indigo-600 text-white shadow'
+                  ? 'bg-cyan-500 text-slate-950 shadow'
                   : 'text-slate-600 dark:text-slate-300'
               }`}
             >
@@ -242,15 +242,15 @@ export const AIPredictionsView: React.FC<AIPredictionsViewProps> = ({
                 <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} unit=" kWh" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0F172A',
-                    borderColor: '#334155',
+                    backgroundColor: '#172033',
+                    borderColor: 'rgba(255,255,255,0.08)',
                     borderRadius: '12px',
-                    color: '#FFF',
+                    color: '#F9FAFB',
                     fontSize: '12px',
                   }}
                 />
-                <Area type="monotone" dataKey="upperBoundKwh" stroke="none" fill="#6366F1" fillOpacity={0.15} name="Upper Bound (kWh)" />
-                <Line type="monotone" dataKey="predictedEnergyKwh" stroke="#6366F1" strokeWidth={3} dot={false} name="Forecasted kWh" />
+                <Area type="monotone" dataKey="upperBoundKwh" stroke="none" fill="#06B6D4" fillOpacity={0.15} name="Upper Bound (kWh)" />
+                <Line type="monotone" dataKey="predictedEnergyKwh" stroke="#06B6D4" strokeWidth={3} dot={false} name="Forecasted kWh" />
                 <Line type="monotone" dataKey="lowerBoundKwh" stroke="#94A3B8" strokeWidth={1.5} strokeDasharray="3 3" dot={false} name="Lower Bound (kWh)" />
               </ComposedChart>
             ) : (
@@ -260,14 +260,14 @@ export const AIPredictionsView: React.FC<AIPredictionsViewProps> = ({
                 <YAxis stroke="#94A3B8" fontSize={11} tickLine={false} unit=" kWh" />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0F172A',
-                    borderColor: '#334155',
+                    backgroundColor: '#172033',
+                    borderColor: 'rgba(255,255,255,0.08)',
                     borderRadius: '12px',
-                    color: '#FFF',
+                    color: '#F9FAFB',
                     fontSize: '12px',
                   }}
                 />
-                <Bar dataKey="predicted" fill="#6366F1" radius={[6, 6, 0, 0]} name="Forecasted kWh" />
+                <Bar dataKey="predicted" fill="#06B6D4" radius={[6, 6, 0, 0]} name="Forecasted kWh" />
               </BarChart>
             )}
           </ResponsiveContainer>
@@ -290,7 +290,7 @@ export const AIPredictionsView: React.FC<AIPredictionsViewProps> = ({
               </div>
               <div className="h-2.5 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-indigo-500"
+                  className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-500"
                   style={{ width: `${feat.importancePct}%` }}
                 ></div>
               </div>

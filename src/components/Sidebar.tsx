@@ -80,10 +80,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group ${
                   isActive
-                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
+                    ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-md shadow-cyan-500/20'
                     : item.highlight
-                    ? 'bg-gradient-to-r from-emerald-500/10 to-teal-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-gradient-to-r from-cyan-500/10 to-teal-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20'
+                    : 'text-slate-400 hover:bg-slate-800/80 hover:text-white'
                 }`}
                 title={item.label}
               >
@@ -91,10 +91,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <Icon
                     className={`h-4 w-4 shrink-0 ${
                       isActive
-                        ? 'text-white'
+                        ? 'text-slate-950'
                         : item.highlight
-                        ? 'text-emerald-500'
-                        : 'text-slate-500 dark:text-slate-400 group-hover:text-emerald-500'
+                        ? 'text-cyan-400'
+                        : 'text-slate-400 group-hover:text-cyan-400'
                     }`}
                   />
                   <span className="hidden md:inline truncate">{item.label}</span>
@@ -104,7 +104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   {item.badge !== undefined && (
                     <span
                       className={`rounded-full px-1.5 py-0.2 text-[10px] font-bold ${
-                        isActive ? 'bg-white/20 text-white' : 'bg-red-500 text-white'
+                        isActive ? 'bg-slate-950/20 text-slate-950' : 'bg-orange-500 text-white'
                       }`}
                     >
                       {item.badge}
@@ -133,15 +133,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold transition-all group ${
                   isActive
-                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-cyan-500 text-slate-950 font-extrabold shadow-md shadow-cyan-500/20'
+                    : 'text-slate-400 hover:bg-slate-800/80 hover:text-white'
                 }`}
                 title={item.label}
               >
                 <div className="flex items-center gap-2.5">
                   <Icon
                     className={`h-4 w-4 shrink-0 ${
-                      isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400 group-hover:text-emerald-500'
+                      isActive ? 'text-slate-950' : 'text-slate-400 group-hover:text-cyan-400'
                     }`}
                   />
                   <span className="hidden md:inline truncate">{item.label}</span>
